@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Open weights: the risk ledger</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--pds-gray-200, #E6E6E6);
+    font-family: var(--font-sans, Arial, sans-serif);
+    color: var(--fg-primary, #000);
+    display: flex;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .sheet {
+    width: 1200px;
+    background: var(--bg-canvas, #fff);
+    padding: 72px 80px 56px;
+  }
+
+  /* ---------- Header ---------- */
+  .eyebrow {
+    font-family: var(--font-sans, Arial, sans-serif);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-brand, #800020);
+  }
+
+  h1 {
+    font-family: var(--font-display, Georgia, serif);
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 1.15;
+    color: var(--fg-brand, #800020);
+    margin-top: 14px;
+    max-width: 900px;
+  }
+
+  .standfirst {
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--fg-secondary, #474747);
+    margin-top: 18px;
+    max-width: 940px;
+  }
+
+  .rule-heavy {
+    height: 6px;
+    background: var(--pds-maroon, #800020);
+    margin-top: 32px;
+  }
+
+  /* ---------- Two-column ledger ---------- */
+  .ledger {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-top: 0;
+    border-bottom: 1px solid var(--border-hairline, #E6E6E6);
+  }
+
+  .col { padding: 32px 36px 34px 0; }
+  .col + .col {
+    padding-left: 36px;
+    padding-right: 0;
+    border-left: 1px solid var(--border-hairline, #E6E6E6);
+  }
+
+  .col-head {
+    font-family: var(--font-sans, Arial, sans-serif);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pds-maroon, #800020);
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--pds-maroon, #800020);
+    margin-bottom: 22px;
+  }
+
+  .risk { margin-bottom: 22px; }
+  .risk:last-child { margin-bottom: 0; }
+
+  .risk-title {
+    font-family: var(--font-display, Georgia, serif);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 6px;
+  }
+
+  .risk-body {
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--fg-secondary, #474747);
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pds-maroon, #800020);
+    background: var(--bg-panel-soft, #F7E3E0);
+    padding: 4px 9px;
+    margin-bottom: 8px;
+  }
+
+  /* ---------- Contested band ---------- */
+  .band {
+    background: var(--bg-canvas-alt, #F5F0EF);
+    padding: 34px 36px;
+    margin-top: 40px;
+    border-left: 6px solid var(--pds-maroon, #800020);
+  }
+
+  .band h2 {
+    font-family: var(--font-display, Georgia, serif);
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 20px;
+  }
+
+  .q-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+
+  .q-num {
+    font-family: var(--font-display, Georgia, serif);
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--pds-maroon, #800020);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .q-label {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+
+  .q-text {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--fg-secondary, #474747);
+  }
+
+  /* ---------- Where it lands ---------- */
+  .lands { margin-top: 40px; }
+
+  .lands h2 {
+    font-family: var(--font-display, Georgia, serif);
+    font-size: 28px;
+    font-weight: 700;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--pds-maroon, #800020);
+    margin-bottom: 20px;
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  th {
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--pds-maroon, #800020);
+    padding: 0 16px 12px 0;
+    vertical-align: bottom;
+  }
+
+  td {
+    font-size: 15px;
+    line-height: 1.55;
+    padding: 14px 16px 14px 0;
+    border-top: 1px solid var(--border-hairline, #E6E6E6);
+    vertical-align: top;
+    color: var(--fg-secondary, #474747);
+  }
+
+  td:first-child {
+    font-weight: 700;
+    color: var(--fg-primary, #000);
+    width: 27%;
+  }
+
+  /* ---------- Footer ---------- */
+  .footer {
+    margin-top: 44px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border-hairline, #E6E6E6);
+  }
+
+  .source {
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--fg-secondary, #474747);
+  }
+
+  .source b { color: var(--fg-primary, #000); }
+
+  .disclaimer {
+    margin-top: 14px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-muted, #949494);
+  }
+
+  .byline {
+    margin-top: 18px;
+    font-family: var(--font-display, Georgia, serif);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--pds-maroon, #800020);
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="eyebrow">Open-weight AI &middot; Policy debate &middot; July 2026</div>
+  <h1>Open weights: the risk sits on both sides of the argument</h1>
+  <p class="standfirst">
+    Twenty-five firms, including NVIDIA, Meta, Microsoft, IBM, and Hugging Face, published a
+    joint case for open-weight models on July 24, 2026. It is an advocacy document, and the
+    signatories hold commercial positions in the outcome. It is also the clearest statement
+    yet of a real tradeoff: the risks of releasing model weights and the risks of not
+    releasing them are different in kind, and neither disappears by choosing the other.
+  </p>
+
+  <div class="rule-heavy"></div>
+
+  <div class="ledger">
+    <div class="col">
+      <div class="col-head">Risks of releasing weights</div>
+
+      <div class="risk">
+        <span class="tag">Irreversibility</span>
+        <div class="risk-title">Release cannot be undone</div>
+        <div class="risk-body">
+          Once weights are published they are outside the developer's control. Modified
+          versions are difficult to trace and impossible to recall. There is no rollback,
+          no patch, and no kill switch.
+        </div>
+      </div>
+
+      <div class="risk">
+        <span class="tag">Safeguards</span>
+        <div class="risk-title">Guardrails are removable</div>
+        <div class="risk-body">
+          Safety behavior trained into a model can be fine-tuned out of a downloaded copy at
+          modest cost. Controls that depend on the provider enforcing them do not survive
+          distribution.
+        </div>
+      </div>
+
+      <div class="risk">
+        <span class="tag">Accountability</span>
+        <div class="risk-title">The control owner goes missing</div>
+        <div class="risk-body">
+          After several rounds of fine-tuning and redistribution, no single party holds both
+          the knowledge of what changed and the obligation to answer for it. Residual risk
+          lands on the deployer by default.
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="col-head">Risks of not releasing them</div>
+
+      <div class="risk">
+        <span class="tag">Concentration</span>
+        <div class="risk-title">Few points, single failures</div>
+        <div class="risk-body">
+          Capability held behind a small number of closed providers creates concentrated
+          operational and supply dependencies. A breach, an outage, or a policy change at one
+          provider propagates across every firm relying on it.
+        </div>
+      </div>
+
+      <div class="risk">
+        <span class="tag">Opacity</span>
+        <div class="risk-title">Closed is not the same as safe</div>
+        <div class="risk-body">
+          Closed models can be breached, misused, or fail in ways outsiders cannot detect.
+          External researchers cannot red-team what they cannot run, so verification depends
+          on the provider's own account of itself.
+        </div>
+      </div>
+
+      <div class="risk">
+        <span class="tag">Defense</span>
+        <div class="risk-title">Asymmetric cyber capability</div>
+        <div class="risk-body">
+          If attackers use advanced models, defenders need comparable capability to simulate
+          and detect those threats. Restricting open weights constrains the defensive side
+          more reliably than the offensive one.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="band">
+    <h2>Three questions the letter raises but does not settle</h2>
+    <div class="q-grid">
+      <div>
+        <div class="q-num">01</div>
+        <div class="q-label">Where does the evidence trail start?</div>
+        <div class="q-text">
+          A deployer of a twice-fine-tuned open model needs provenance for weights, data, and
+          modifications. Today that record usually begins at download, not at training.
+        </div>
+      </div>
+      <div>
+        <div class="q-num">02</div>
+        <div class="q-label">What separates distillation from extraction?</div>
+        <div class="q-text">
+          The letter treats training on another model's outputs as legitimate practice and
+          unlawful value extraction as distinct. The line between them is asserted, not drawn.
+        </div>
+      </div>
+      <div>
+        <div class="q-num">03</div>
+        <div class="q-label">Who attests to an open model in production?</div>
+        <div class="q-text">
+          Closed providers can be contracted for assurances. Open weights carry no
+          counterparty, so the attestation obligation shifts entirely to the deploying firm.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lands">
+    <h2>What this changes for a risk function</h2>
+    <table>
+      <tr>
+        <th>Control area</th>
+        <th>The open-weight version of the problem</th>
+        <th>Practical first move</th>
+      </tr>
+      <tr>
+        <td>Model inventory</td>
+        <td>Weights can be copied into an environment without a procurement event to trigger registration.</td>
+        <td>Detect at the infrastructure layer, not the vendor layer.</td>
+      </tr>
+      <tr>
+        <td>Third-party risk</td>
+        <td>There is no supplier to assess, no contract, and no service level to enforce.</td>
+        <td>Treat the model as an internally owned asset from day one.</td>
+      </tr>
+      <tr>
+        <td>Change management</td>
+        <td>Fine-tuning alters behavior without changing anything a release process would notice.</td>
+        <td>Version weights and evaluations together, or neither is meaningful.</td>
+      </tr>
+      <tr>
+        <td>Concentration risk</td>
+        <td>Closed-only strategies concentrate dependency; open-only strategies concentrate accountability.</td>
+        <td>Set a deliberate mix with named thresholds rather than defaulting to one.</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="footer">
+    <div class="source">
+      <b>Source:</b> "Open Weights and American AI Leadership," joint open letter, July 24, 2026,
+      published by NVIDIA and signed by 25 organizations including Andreessen Horowitz, Box,
+      CrowdStrike, Dell Technologies, Hugging Face, IBM, The Linux Foundation, Meta, Microsoft,
+      Mistral, Mozilla, Palantir, Perplexity, Replit, ServiceNow, and Y Combinator.
+      Left column and right column risks are drawn from the letter's own text; the questions and
+      control-area table are the author's analysis and are not claims made by the signatories.
+    </div>
+    <div class="disclaimer">
+      Views expressed are my own and do not represent those of my employer. Nothing here is investment,
+      legal, or regulatory advice.
+    </div>
+    <div class="byline">Hitesh Patel &middot; Enterprise risk &amp; AI governance Leader</div>
+  </div>
+
+</div>
+</body>
+</html>
