@@ -1,0 +1,491 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RCSA maturity map</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;700&family=Public+Sans:wght@400;700&display=swap');
+  :root{
+    /* Personal design system tokens — see design-system/colors_and_type.css */
+    --pds-maroon:#800020; --pds-maroon-deep:#4A0E1F; --pds-maroon-mid:#B33951;
+    --pds-maroon-ink:#5C1A2B; --pds-blush:#E8AFAF; --pds-faded-rose:#F7E3E0;
+    --pds-black:#000000; --pds-white:#FFFFFF; --pds-off-white:#F5F0EF;
+    --pds-gray-700:#474747; --pds-gray-500:#949494; --pds-gray-200:#E6E6E6;
+    --font-display:"Source Serif 4",Georgia,"Times New Roman",serif;
+    --font-body:"Public Sans",Arial,Helvetica,sans-serif;
+    --tracking-wide:.04em;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--pds-white);color:var(--pds-black);
+       font-family:var(--font-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;}
+  .sheet{max-width:1360px;margin:0 auto;padding:48px 48px 0;}
+
+  .pds-eyebrow{font-family:var(--font-body);font-size:12px;font-weight:700;text-transform:uppercase;
+               letter-spacing:var(--tracking-wide);color:var(--pds-maroon);margin:0 0 12px;}
+  h1{font-family:var(--font-display);font-size:48px;line-height:1.05;color:var(--pds-maroon);
+     font-weight:700;margin:0 0 16px;}
+  h2{font-family:var(--font-display);font-size:36px;line-height:1.2;color:var(--pds-black);
+     font-weight:700;margin:0 0 8px;}
+  h3{font-family:var(--font-display);font-size:22px;line-height:1.2;color:var(--pds-black);
+     font-weight:700;margin:0 0 8px;}
+  p{margin:0 0 12px;}
+  .lead{font-size:18px;line-height:1.55;color:var(--pds-gray-700);max-width:1020px;}
+  .rule{height:4px;background:var(--pds-maroon);margin:0 0 24px;}
+  .byline{font-size:14px;color:var(--pds-gray-700);margin:0 0 20px;}
+  .byline b{color:var(--pds-black);}
+  .section{padding:40px 0 8px;border-top:1px solid var(--pds-gray-200);margin-top:40px;}
+  .section-head{margin-bottom:20px;}
+  .section-head p{color:var(--pds-gray-700);max-width:960px;margin:0;}
+  .figlabel{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:var(--tracking-wide);
+            color:var(--pds-maroon);margin:24px 0 6px;}
+  .figrule{height:2px;background:var(--pds-maroon);margin:0 0 16px;width:100%;}
+
+  /* ---- Maturity ladder ---- */
+  .ladder{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-items:stretch;}
+  .step{border:1px solid var(--pds-gray-200);background:var(--pds-white);display:flex;flex-direction:column;}
+  .step-head{padding:14px 16px;display:flex;align-items:center;gap:10px;}
+  .step-num{font-family:var(--font-display);font-size:28px;font-weight:700;line-height:1;}
+  .step-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:var(--tracking-wide);}
+  .l1 .step-head{background:var(--pds-off-white);color:var(--pds-gray-700);}
+  .l2 .step-head{background:var(--pds-faded-rose);color:var(--pds-maroon-ink);}
+  .l3 .step-head{background:var(--pds-maroon-mid);color:var(--pds-white);}
+  .l4 .step-head{background:var(--pds-maroon);color:var(--pds-white);}
+  .l5 .step-head{background:var(--pds-maroon-deep);color:var(--pds-white);}
+  .step-body{padding:16px;display:flex;flex-direction:column;gap:10px;flex:1;}
+  .pict{width:56px;height:56px;display:block;}
+  .step-name{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--pds-maroon);line-height:1.2;}
+  .step-hook{font-size:14px;color:var(--pds-gray-700);border-left:2px solid var(--pds-maroon);padding-left:10px;line-height:1.4;}
+  .step ul{margin:0;padding-left:16px;font-size:14px;line-height:1.45;}
+  .step li{margin-bottom:6px;}
+  .riser-track{background:var(--pds-gray-200);height:8px;margin-bottom:12px;}
+  .riser{height:8px;}
+  .l1 .riser{width:20%;background:var(--pds-gray-500);}
+  .l2 .riser{width:40%;background:var(--pds-maroon-mid);}
+  .l3 .riser{width:60%;background:var(--pds-maroon-mid);}
+  .l4 .riser{width:80%;background:var(--pds-maroon);}
+  .l5 .riser{width:100%;background:var(--pds-maroon-deep);}
+  .step-foot{border-top:1px solid var(--pds-gray-200);padding:10px 16px;font-size:12px;color:var(--pds-gray-700);}
+  .step-foot b{color:var(--pds-maroon-ink);}
+
+  /* ---- Shift band ---- */
+  .shift{display:grid;grid-template-columns:1fr auto 1fr;gap:24px;align-items:center;
+         background:var(--pds-off-white);padding:24px;}
+  .shift h3{margin-bottom:4px;}
+  .shift .from h3{color:var(--pds-gray-700);}
+  .shift .to h3{color:var(--pds-maroon);}
+  .shift ul{margin:0;padding-left:18px;font-size:15px;color:var(--pds-gray-700);}
+  .shift .to ul{color:var(--pds-black);}
+  .arrow{font-size:40px;color:var(--pds-maroon);font-weight:700;line-height:1;}
+
+  /* ---- Matrix ---- */
+  table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.4;}
+  thead th{background:var(--pds-maroon);color:var(--pds-white);font-weight:700;text-align:left;
+           padding:10px;vertical-align:top;}
+  thead th:first-child{width:150px;}
+  tbody th{text-align:left;font-weight:700;color:var(--pds-maroon-ink);padding:10px;vertical-align:top;width:150px;}
+  tbody td{padding:10px;vertical-align:top;border-bottom:1px solid #eaeaea;}
+  tbody tr:nth-child(even){background:var(--pds-off-white);}
+  tbody tr td:last-child{background:var(--pds-faded-rose);color:var(--pds-maroon-ink);font-weight:700;}
+
+  /* ---- Pathways ---- */
+  .paths{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  .card{border:1px solid var(--pds-gray-200);padding:0 16px 16px;display:flex;flex-direction:column;}
+  .card .cap{height:2px;background:var(--pds-maroon);margin:0 -16px 14px;}
+  .card .kicker{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:var(--tracking-wide);
+                color:var(--pds-maroon);margin-bottom:6px;}
+  .card h3{font-size:20px;margin-bottom:8px;color:var(--pds-maroon);}
+  .card dl{margin:0;font-size:13px;line-height:1.45;}
+  .card dt{font-weight:700;color:var(--pds-maroon-ink);margin-top:10px;}
+  .card dd{margin:2px 0 0;color:var(--pds-gray-700);}
+  .effort{margin-top:14px;font-size:12px;color:var(--pds-gray-700);
+          border-top:1px solid var(--pds-gray-200);padding-top:8px;}
+  .bar{height:8px;background:var(--pds-gray-200);margin-top:6px;}
+  .bar span{display:block;height:8px;background:var(--pds-maroon);}
+
+  .guard{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px;}
+  .guard div{border-left:4px solid var(--pds-maroon);padding:4px 0 4px 14px;font-size:14px;color:var(--pds-gray-700);}
+  .guard b{display:block;color:var(--pds-black);margin-bottom:4px;}
+
+  .gates{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  .gate{border:1px solid var(--pds-gray-200);padding:16px;}
+  .gate .from-to{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:var(--tracking-wide);
+                 color:var(--pds-maroon);margin-bottom:8px;}
+  .gate ul{margin:0;padding-left:16px;font-size:13px;color:var(--pds-gray-700);line-height:1.45;}
+  .gate li{margin-bottom:6px;}
+
+  .source{font-size:10px;color:var(--pds-gray-700);margin:32px 0 16px;max-width:1020px;line-height:1.6;}
+  .source b{color:var(--pds-black);}
+  .disclaimer-bar{background:var(--pds-maroon);color:var(--pds-white);font-weight:700;font-size:12px;
+                  text-transform:uppercase;letter-spacing:var(--tracking-wide);padding:14px 48px;margin-top:24px;}
+
+  @media (max-width:1100px){
+    .ladder,.paths,.gates{grid-template-columns:1fr 1fr;}
+    .shift{grid-template-columns:1fr;} .arrow{transform:rotate(90deg);}
+    .guard{grid-template-columns:1fr;}
+    h1{font-size:36px;} h2{font-size:28px;} .sheet{padding:32px 24px 0;} .disclaimer-bar{padding:14px 24px;}
+    .matrix-wrap{overflow-x:auto;} table{min-width:900px;}
+  }
+  @media print{ body{font-size:11px;} .sheet{max-width:none;padding:16px 16px 0;} h1{font-size:32px;} .section{page-break-inside:avoid;} }
+</style>
+
+<div class="sheet">
+
+  <p class="pds-eyebrow">Operational risk · Risk and control self-assessment</p>
+  <h1>The RCSA maturity map</h1>
+  <div class="rule"></div>
+  <p class="byline"><b>[Your name]</b> · Enterprise risk management, global asset management</p>
+  <p class="lead">Most RCSA programs fail in the same way. They assess every process at the same depth,
+  on the same annual cycle, and call the result coverage. The constraint is finite second-line and
+  business capacity, so uniform depth means the highest exposures get no more scrutiny than the
+  lowest. This map sets out five levels, and what has to be true at each one before the business can
+  be trusted to elect its own approach: deep-dive, thematic refresh, attestation, or continuous
+  monitoring, chosen against published criteria rather than preference.</p>
+
+  <!-- LADDER -->
+  <div class="section" style="border-top:none;margin-top:24px;padding-top:8px;">
+    <p class="figlabel">Figure 1 — Five levels of RCSA maturity</p>
+    <div class="figrule"></div>
+    <div class="ladder">
+
+      <div class="step l1">
+        <div class="step-head"><span class="step-num">1</span><span class="step-label">Initial</span></div>
+        <div class="step-body">
+          <div class="riser-track"><div class="riser"></div></div>
+          <svg class="pict" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 144" overflow="hidden"><circle cx="41.114" cy="45.017" r="25.201" fill="#F0C6C6"></circle><path d="M40.274 44.434 36.77 50.424C23.104 73.786 30.964 103.804 54.326 117.47 77.689 131.137 107.706 123.277 121.373 99.915 135.04 76.552 127.18 46.535 103.817 32.868 96.111 28.36 87.68 26.194 79.351 26.154" stroke="#800020" stroke-width="6" stroke-linejoin="bevel" fill="none"></path><path d="M79.296 39.105 79.296 75.135 55.296 75.105M43.635 56.41 43.634 42.237 29.464 42.239" stroke="#800020" stroke-width="6" stroke-linejoin="bevel" fill="none"></path></svg>
+          <div class="step-name">Ad hoc</div>
+          <div class="step-hook">The assessment happens because someone asked for it, not because it informs a decision.</div>
+          <ul>
+            <li>No common taxonomy; risks described in local language</li>
+            <li>Scope set by who is available, not by exposure</li>
+            <li>Ratings are opinion, and uncalibrated between teams</li>
+            <li>Output lives in spreadsheets and slide decks</li>
+          </ul>
+        </div>
+        <div class="step-foot"><b>What the business feels:</b> a survey to be survived.</div>
+      </div>
+
+      <div class="step l2">
+        <div class="step-head"><span class="step-num">2</span><span class="step-label">Repeatable</span></div>
+        <div class="step-body">
+          <div class="riser-track"><div class="riser"></div></div>
+          <svg class="pict" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 144" overflow="hidden"><circle cx="73.867" cy="93.39" r="36.247" fill="#F0C6C6" transform="matrix(0.0708881 -0.997484 0.997484 0.0708881 -24.5243 160.451)"></circle><path d="M25.937 8.489 118.063 8.489 118.063 135.511 25.937 135.511Z" stroke="#800020" stroke-width="6" stroke-linejoin="bevel" fill="none"></path><path d="M36.173 18.8 107.826 18.8 107.826 48.98 36.173 48.98Z" stroke="#800020" stroke-width="6" stroke-linejoin="bevel" fill="none"></path><path d="M67.634 69.85C67.6335 72.7799 65.2579 75.1545 62.328 75.154 59.3981 75.1535 57.0234 72.7779 57.024 69.848 57.0243 66.9181 59.3996 64.5432 62.3295 64.5435 65.2594 64.5438 67.6343 66.9191 67.634 69.849M67.634 91.919C67.6337 94.8489 65.2584 97.2238 62.3285 97.2235 59.3986 97.2232 57.0237 94.8479 57.024 91.918 57.024 88.9881 59.3991 86.613 62.329 86.613 65.2589 86.613 67.634 88.9881 67.634 91.918M67.634 113.992C67.6337 116.922 65.2584 119.297 62.3285 119.296 59.3986 119.296 57.0237 116.921 57.024 113.991 57.024 111.061 59.3991 108.686 62.329 108.686 65.2589 108.686 67.634 111.061 67.634 113.991M48.294 69.85C48.2934 72.7799 45.9179 75.1545 42.988 75.154 40.0581 75.1535 37.6834 72.7779 37.684 69.848 37.6843 66.9181 40.0596 64.5432 42.9895 64.5435 45.9194 64.5438 48.2943 66.9191 48.294 69.849M48.294 91.919C48.2937 94.8489 45.9184 97.2238 42.9885 97.2235 40.0586 97.2232 37.6837 94.8479 37.684 91.918 37.684 88.9881 40.0591 86.613 42.989 86.613 45.9189 86.613 48.294 88.9881 48.294 91.918M48.294 113.992C48.2937 116.922 45.9184 119.297 42.9885 119.296 40.0586 119.296 37.6837 116.921 37.684 113.991 37.684 111.061 40.0591 108.686 42.989 108.686 45.9189 108.686 48.294 111.061 48.294 113.991M86.974 69.85C86.9734 72.7799 84.5979 75.1545 81.668 75.154 78.7381 75.1535 76.3634 72.7779 76.364 69.848 76.3643 66.9181 78.7396 64.5432 81.6695 64.5435 84.5994 64.5438 86.9743 66.9191 86.974 69.849M86.974 91.919C86.9737 94.8489 84.5984 97.2238 81.6685 97.2235 78.7386 97.2232 76.3637 94.8479 76.364 91.918 76.364 88.9881 78.7391 86.613 81.669 86.613 84.5989 86.613 86.974 88.9881 86.974 91.918M86.974 113.992C86.9737 116.922 84.5984 119.297 81.6685 119.296 78.7386 119.296 76.3637 116.921 76.364 113.991 76.364 111.061 78.7391 108.686 81.669 108.686 84.5989 108.686 86.974 111.061 86.974 113.991M106.314 69.85C106.313 72.7799 103.938 75.1545 101.008 75.154 98.0781 75.1535 95.7035 72.7779 95.704 69.848 95.7043 66.9181 98.0796 64.5432 101.009 64.5435 103.939 64.5438 106.314 66.9191 106.314 69.849" fill="#800020"></path><path d="M106.314 91.919C106.314 94.8489 103.938 97.2238 101.009 97.2235 98.0786 97.2232 95.7037 94.8479 95.704 91.918 95.704 88.9881 98.0791 86.613 101.009 86.613 103.939 86.613 106.314 88.9881 106.314 91.918" fill="#F0C6C6"></path><path d="M106.314 113.992C106.314 116.922 103.938 119.297 101.009 119.296 98.0786 119.296 95.7037 116.921 95.704 113.991 95.704 111.061 98.0791 108.686 101.009 108.686 103.939 108.686 106.314 111.061 106.314 113.991" fill="#800020"></path></svg>
+          <div class="step-name">Compliance-driven</div>
+          <div class="step-hook">One template, applied to everything, on one annual cycle.</div>
+          <ul>
+            <li>Common template and taxonomy exist and are used</li>
+            <li>Uniform scope and frequency regardless of exposure</li>
+            <li>Controls documented; effectiveness largely self-declared</li>
+            <li>Completion rate is the measure of success</li>
+          </ul>
+        </div>
+        <div class="step-foot"><b>What the business feels:</b> an annual obligation.</div>
+      </div>
+
+      <div class="step l3">
+        <div class="step-head"><span class="step-num">3</span><span class="step-label">Defined</span></div>
+        <div class="step-body">
+          <div class="riser-track"><div class="riser"></div></div>
+          <svg class="pict" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 144" overflow="hidden"><circle cx="114.001" cy="84.219" r="21.075" fill="#F0C6C6"></circle><path d="M72.45 84.182C83.246 84.182 91.998 75.429 91.998 64.632 91.998 53.837 83.246 45.084 72.45 45.084 61.653 45.084 52.9 53.837 52.901 64.633L52.901 64.67C52.921 75.452 61.668 84.182 72.45 84.182ZM16.258 47.567C20.3087 47.567 23.5925 44.2832 23.5925 40.2325 23.5925 36.1818 20.3087 32.898 16.258 32.898 12.2073 32.898 8.9235 36.1818 8.9235 40.2325 8.9235 44.2832 12.2073 47.567 16.258 47.567ZM114.001 30.463C118.051 30.4575 121.331 27.1695 121.325 23.119 121.319 19.0685 118.031 15.7895 113.981 15.795 109.931 15.8005 106.652 19.0879 106.657 23.138 106.657 27.1835 109.936 30.463 113.982 30.463 113.988 30.463 113.995 30.463 114.001 30.463ZM16.258 128.206C20.3087 128.206 23.5925 124.922 23.5925 120.871 23.5925 116.821 20.3087 113.537 16.258 113.537 12.2073 113.537 8.9235 116.821 8.9235 120.871 8.9235 124.922 12.2073 128.206 16.258 128.206L16.258 128.206ZM72.45 128.206C76.5005 128.211 79.788 124.931 79.793 120.881 79.798 116.831 76.5184 113.543 72.468 113.538 68.4179 113.533 65.1305 116.812 65.125 120.862L65.125 120.872C65.12 124.917 68.3949 128.2 72.44 128.206L72.45 128.206ZM21.419 115.701 58.68 78.561M86.303 50.873 108.783 28.318M22.852 43.417 54.484 57.017M106.966 81.896 89.291 74.59M72.45 113.547 72.45 84.182M114.001 91.553C118.051 91.5474 121.33 88.2594 121.325 84.2089 121.319 80.1585 118.031 76.8794 113.981 76.885 109.949 76.8906 106.677 80.15 106.657 84.182 106.632 88.2274 109.89 91.5275 113.936 91.5529 113.958 91.553 113.979 91.5531 114.001 91.553Z" stroke="#800020" stroke-width="6" stroke-linejoin="bevel" fill="none"></path></svg>
+          <div class="step-name">Standardized</div>
+          <div class="step-hook">One methodology, calibrated ratings, and evidence behind the conclusion.</div>
+          <ul>
+            <li>Documented scales for likelihood, impact, and control effectiveness</li>
+            <li>Risks written as cause &rarr; event &rarr; consequence</li>
+            <li>Key controls identified and independently tested</li>
+            <li>Second-line challenge is a defined step, not a courtesy</li>
+          </ul>
+        </div>
+        <div class="step-foot"><b>What the business feels:</b> a disciplined process.</div>
+      </div>
+
+      <div class="step l4">
+        <div class="step-head"><span class="step-num">4</span><span class="step-label">Managed</span></div>
+        <div class="step-body">
+          <div class="riser-track"><div class="riser"></div></div>
+          <svg class="pict" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 144" overflow="hidden"><circle cx="93.197" cy="37.349" r="29.58" fill="#F0C6C6" transform="matrix(0.376143 -0.926561 0.926561 0.376143 23.5345 109.654)"></circle><path d="M112.329 31.314 131.512 31.314 131.512 113.54 12.488 113.54 12.488 31.314 73.995 31.314M71.895 116.347 71.895 136.193M43.543 136.23 100.248 136.23" stroke="#800020" stroke-width="6" stroke-linejoin="bevel" fill="none"></path><path d="M76.828 68.136 57.995 100.935 40.984 72.595 16.544 114.483" stroke="#800020" stroke-width="6" stroke-linejoin="bevel" fill="none"></path><g stroke="#800020" stroke-width="6" stroke-linejoin="bevel" fill="none"><circle cx="93.412" cy="37.056" r="19.868"></circle><path d="M107.461 51.105 122.93 66.591"></path></g></svg>
+          <div class="step-name">Integrated</div>
+          <div class="step-hook">The assessment is tested against what the data already says about the risk.</div>
+          <ul>
+            <li>One platform links risks, controls, issues, incidents, and KRIs</li>
+            <li>Loss events and metrics challenge self-assessed ratings</li>
+            <li>Scope and depth begin to flex with residual risk</li>
+            <li>Results feed appetite monitoring and resourcing decisions</li>
+          </ul>
+        </div>
+        <div class="step-foot"><b>What the business feels:</b> a management tool.</div>
+      </div>
+
+      <div class="step l5">
+        <div class="step-head"><span class="step-num">5</span><span class="step-label">Optimized</span></div>
+        <div class="step-body">
+          <div class="riser-track"><div class="riser"></div></div>
+          <svg class="pict" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 144" overflow="hidden"><circle cx="72" cy="72" r="19.611" fill="#F0C6C6"></circle><circle cx="72" cy="72" r="51.292" stroke="#800020" stroke-width="6" stroke-linejoin="bevel" fill="none"></circle><circle cx="72" cy="72" r="30.171" stroke="#800020" stroke-width="6" stroke-linejoin="bevel" fill="none"></circle><circle cx="72" cy="72" r="12.518" fill="#800020"></circle></svg>
+          <div class="step-name">Risk-based by election</div>
+          <div class="step-hook">The business chooses the approach that fits the risk, inside guardrails the second line owns.</div>
+          <ul>
+            <li>Four defined approaches, selected per process</li>
+            <li>Assessment triggered by change and signal, not only the calendar</li>
+            <li>Low-risk, stable processes consume minimal effort</li>
+            <li>Second line challenges the election, not only the result</li>
+          </ul>
+        </div>
+        <div class="step-foot"><b>What the business feels:</b> a choice they own.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SHIFT -->
+  <div class="section">
+    <div class="section-head">
+      <h2>The shift that defines the end state</h2>
+      <p>Levels 1 to 3 make the RCSA consistent. Level 4 makes it credible. Level 5 makes it
+      proportionate — the same governance standard, applied at different intensity.</p>
+    </div>
+    <p class="figlabel">Figure 2 — Uniform application against risk-based election</p>
+    <div class="figrule"></div>
+    <div class="shift">
+      <div class="from">
+        <h3>Uniform application</h3>
+        <ul>
+          <li>Every process assessed at the same depth, on the same cycle</li>
+          <li>Effort spread evenly, so the largest exposures get no more attention than the smallest</li>
+          <li>Completion is the outcome</li>
+        </ul>
+      </div>
+      <div class="arrow" aria-hidden="true">&rarr;</div>
+      <div class="to">
+        <h3>Risk-based election</h3>
+        <ul>
+          <li>Approach selected per process against published criteria: inherent risk, control performance, change, and regulatory profile</li>
+          <li>Effort concentrates where residual risk and volatility are highest</li>
+          <li>Decision quality is the outcome</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- MATRIX -->
+  <div class="section">
+    <div class="section-head">
+      <h2>What changes across the levels</h2>
+      <p>Read down a column for a level profile. Read across a row to see how one dimension matures.</p>
+    </div>
+    <p class="figlabel">Figure 3 — Maturity by dimension</p>
+    <div class="figrule"></div>
+    <div class="matrix-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Dimension</th>
+          <th scope="col">1 · Ad hoc</th>
+          <th scope="col">2 · Compliance-driven</th>
+          <th scope="col">3 · Standardized</th>
+          <th scope="col">4 · Integrated</th>
+          <th scope="col">5 · Risk-based</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Scoping</th>
+          <td>Undefined; varies by team</td>
+          <td>Fixed list of processes, reviewed annually</td>
+          <td>Process universe formally defined and owned</td>
+          <td>Scope tiered by inherent risk and materiality</td>
+          <td>Business elects scope and depth per process against published criteria</td>
+        </tr>
+        <tr>
+          <th scope="row">Frequency and triggers</th>
+          <td>When requested</td>
+          <td>Annual, calendar-driven</td>
+          <td>Annual, with defined interim triggers</td>
+          <td>Cycle varies by risk tier; change events force a refresh</td>
+          <td>Event- and signal-driven; the calendar is a backstop, not the driver</td>
+        </tr>
+        <tr>
+          <th scope="row">Risk identification</th>
+          <td>Local language, no taxonomy</td>
+          <td>Mapped to a taxonomy after the fact</td>
+          <td>Taxonomy-anchored cause &rarr; event &rarr; consequence statements</td>
+          <td>Informed by incidents, near-misses, issues, and external events</td>
+          <td>Continuously refreshed from internal signal and industry read-across</td>
+        </tr>
+        <tr>
+          <th scope="row">Control assessment</th>
+          <td>Controls listed, not rated</td>
+          <td>Self-declared effectiveness</td>
+          <td>Design and operating effectiveness rated to a defined standard</td>
+          <td>Ratings corroborated by testing, metrics, and issue history</td>
+          <td>Continuous monitoring on critical controls; the assessment confirms exceptions</td>
+        </tr>
+        <tr>
+          <th scope="row">Evidence</th>
+          <td>Narrative only</td>
+          <td>Attestation</td>
+          <td>Sampled testing with retained evidence</td>
+          <td>Risk-tiered testing depth; evidence held in system</td>
+          <td>Population-level evidence where automated; sampling reserved for judgment-based controls</td>
+        </tr>
+        <tr>
+          <th scope="row">Data and tooling</th>
+          <td>Spreadsheets and email</td>
+          <td>Central repository of record</td>
+          <td>Workflow tooling with a defined data model</td>
+          <td>Risk, control, issue, incident, and KRI data integrated</td>
+          <td>Analytics prioritize where the assessment should look next</td>
+        </tr>
+        <tr>
+          <th scope="row">Governance and challenge</th>
+          <td>None, or informal</td>
+          <td>Completeness review</td>
+          <td>Structured second-line challenge of ratings</td>
+          <td>Challenge focused on outliers and divergence from the data</td>
+          <td>Second line owns the guardrails and challenges the elected approach</td>
+        </tr>
+        <tr>
+          <th scope="row">Use of output</th>
+          <td>Filed</td>
+          <td>Reported for completeness</td>
+          <td>Feeds the risk register and committee reporting</td>
+          <td>Drives appetite monitoring, remediation, and resource allocation</td>
+          <td>Informs business decisions: change approval, new product, outsourcing, investment</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- PATHWAYS -->
+  <div class="section">
+    <div class="section-head">
+      <h2>Level 5: the four approaches a business can elect</h2>
+      <p>Each election is made per process, evidenced against criteria, and open to second-line
+      challenge before work begins. Higher residual risk narrows the available choices. What each
+      approach buys, and what it costs, is set out below.</p>
+    </div>
+    <p class="figlabel">Figure 4 — Elective RCSA pathways and their conditions</p>
+    <div class="figrule"></div>
+    <div class="paths">
+
+      <div class="card">
+        <div class="cap"></div>
+        <div class="kicker">Pathway A</div>
+        <h3>Full assessment</h3>
+        <dl>
+          <dt>When it applies</dt>
+          <dd>High inherent risk, weak or unproven controls, material regulatory exposure, or a first assessment of the process.</dd>
+          <dt>What it requires</dt>
+          <dd>End-to-end process decomposition, full risk and control identification, independent testing, and workshop-based challenge.</dd>
+          <dt>What it costs</dt>
+          <dd>The most business and second-line time of any pathway.</dd>
+        </dl>
+        <div class="effort">Relative effort<div class="bar"><span style="width:100%"></span></div></div>
+      </div>
+
+      <div class="card">
+        <div class="cap"></div>
+        <div class="kicker">Pathway B</div>
+        <h3>Targeted refresh</h3>
+        <dl>
+          <dt>When it applies</dt>
+          <dd>An established assessment where change is confined to one area, or a cross-business theme that needs consistent treatment.</dd>
+          <dt>What it requires</dt>
+          <dd>Reassessment of the affected risks and controls; the remainder carried forward with a documented rationale.</dd>
+          <dt>What it costs</dt>
+          <dd>Accepts the carried-forward profile is only as good as its last full assessment.</dd>
+        </dl>
+        <div class="effort">Relative effort<div class="bar"><span style="width:65%"></span></div></div>
+      </div>
+
+      <div class="card">
+        <div class="cap"></div>
+        <div class="kicker">Pathway C</div>
+        <h3>Attestation</h3>
+        <dl>
+          <dt>When it applies</dt>
+          <dd>Low residual risk, stable process, no material change, clean issue and incident history, controls performing to metric.</dd>
+          <dt>What it requires</dt>
+          <dd>Owner confirmation that the recorded profile still holds, supported by evidence of no change and no adverse signal.</dd>
+          <dt>What it costs</dt>
+          <dd>Relies on the owner recognizing change; weakest against slow drift.</dd>
+        </dl>
+        <div class="effort">Relative effort<div class="bar"><span style="width:25%"></span></div></div>
+      </div>
+
+      <div class="card">
+        <div class="cap"></div>
+        <div class="kicker">Pathway D</div>
+        <h3>Continuous monitoring</h3>
+        <dl>
+          <dt>When it applies</dt>
+          <dd>Automated or system-enforced controls with reliable data, where performance can be observed rather than periodically asserted.</dd>
+          <dt>What it requires</dt>
+          <dd>Monitoring rules, defined thresholds, an exception workflow, and periodic review that the monitoring itself remains fit for purpose.</dd>
+          <dt>What it costs</dt>
+          <dd>Build effort up front, and a new dependency: the monitoring becomes a control to assess.</dd>
+        </dl>
+        <div class="effort">Relative effort<div class="bar"><span style="width:40%"></span></div></div>
+      </div>
+
+    </div>
+
+    <div class="guard">
+      <div><b>Guardrails</b>Published election criteria, minimum standards per pathway, and a defined set of processes where Pathway A is mandatory regardless of business preference.</div>
+      <div><b>Challenge</b>The second line reviews the elected pathway before work begins and can require escalation to a deeper approach.</div>
+      <div><b>Override triggers</b>A significant incident, control failure, adverse audit finding, regulatory change, or major transformation resets the process to a full assessment.</div>
+    </div>
+  </div>
+
+  <!-- PROGRESSION -->
+  <div class="section">
+    <div class="section-head">
+      <h2>What has to be true to move up</h2>
+      <p>Each level depends on the one below it. A business that elects a lighter pathway without
+      calibrated ratings and trustworthy control data is not being efficient; it is under-assessing
+      and recording the result as assurance.</p>
+    </div>
+    <p class="figlabel">Figure 5 — Entry conditions for each level</p>
+    <div class="figrule"></div>
+    <div class="gates">
+      <div class="gate">
+        <div class="from-to">1 &rarr; 2</div>
+        <ul>
+          <li>Single taxonomy and template adopted</li>
+          <li>Process universe documented, with named owners</li>
+          <li>Central repository of record established</li>
+        </ul>
+      </div>
+      <div class="gate">
+        <div class="from-to">2 &rarr; 3</div>
+        <ul>
+          <li>Published methodology with defined rating scales</li>
+          <li>Key controls identified and tested independently</li>
+          <li>Second-line challenge embedded in the cycle</li>
+        </ul>
+      </div>
+      <div class="gate">
+        <div class="from-to">3 &rarr; 4</div>
+        <ul>
+          <li>Risk, control, issue, and incident data integrated</li>
+          <li>KRIs reliable enough to challenge a rating</li>
+          <li>Risk tiering of the process universe agreed</li>
+        </ul>
+      </div>
+      <div class="gate">
+        <div class="from-to">4 &rarr; 5</div>
+        <ul>
+          <li>Election criteria and minimum standards approved by governance</li>
+          <li>Control performance data trusted enough to justify reduced assessment</li>
+          <li>Override triggers and challenge rights formally defined</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <p class="source"><b>Source:</b> Author's framework, drawing on common operational risk and RCSA
+  practice and concepts consistent with COSO ERM and ISO 31000. It is not taken from a published
+  standard, and the relative effort bars in Figure 4 are illustrative rather than measured. Level
+  definitions, pathway criteria, and entry conditions should be reconciled to a firm's own ERM
+  policy, taxonomy, and rating methodology before use.</p>
+
+</div>
+
+<div class="disclaimer-bar">Views expressed are my own and do not represent those of my employer · Not investment advice · No confidential or firm-specific information is included</div>
