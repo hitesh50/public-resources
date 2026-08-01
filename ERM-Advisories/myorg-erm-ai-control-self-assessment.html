@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI control self-assessment | MyOrg enterprise risk management</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;700&family=Public+Sans:wght@400;700&display=swap');
+    :root {
+      /* Personal design system tokens (maroon family) */
+      --navy: #4A0E1F;
+      --blue: #800020;
+      --blue-mid: #B33951;
+      --blue-ink: #5C1A2B;
+      --white: #FFFFFF;
+      --gray: #F5F0EF;
+      --gray-700: #474747;
+      --gray-500: #949494;
+      --pale-cyan: #F7E3E0;
+      --ink: #000000;
+      --muted: #474747;
+      --line: #E6E6E6;
+      --red: #E4251B;
+      --green: #00A841;
+      --orange: #F96706;
+      --font-display: "Source Serif 4", Georgia, "Times New Roman", serif;
+      --font-sans: "Public Sans", "Helvetica Neue", Helvetica, "Liberation Sans", system-ui, sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--white);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    a {
+      color: var(--blue);
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    [tabindex]:focus-visible {
+      outline: 3px solid var(--blue);
+      outline-offset: 2px;
+    }
+
+    /* ============ Header ============ */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: var(--navy);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 56px;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, .25);
+    }
+
+    .wordmark {
+      font-weight: bold;
+      font-size: 20px;
+      letter-spacing: .5px;
+    }
+
+    .wordmark span {
+      font-weight: normal;
+      opacity: .85;
+      font-size: 12px;
+      display: block;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: bold;
+      border: 1px solid var(--white);
+      background: transparent;
+      color: var(--white);
+      padding: 7px 14px;
+      cursor: pointer;
+      border-radius: 0;
+    }
+
+    .btn:hover {
+      background: var(--white);
+      color: var(--navy);
+    }
+
+    .classification {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border: 1px solid rgba(255, 255, 255, .5);
+      padding: 3px 8px;
+      opacity: .9;
+    }
+
+    /* ============ Hero ============ */
+    .hero {
+      background: var(--navy);
+      color: var(--white);
+      padding: 14px 24px;
+    }
+
+    .hero-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-left: 4px solid var(--blue);
+      background: rgba(0, 10, 210, .35);
+      padding: 3px 8px;
+      margin-bottom: 10px;
+    }
+
+    .hero h1 {
+      font-size: 26px;
+      line-height: 1.2;
+      max-width: 860px;
+    }
+
+    .hero p.sub {
+      margin-top: 8px;
+      font-size: 12px;
+      max-width: 800px;
+      opacity: .92;
+    }
+
+    /* ============ Sticky scoreboard ============ */
+    .scoreboard {
+      position: sticky;
+      top: 56px;
+      z-index: 55;
+      background: var(--gray);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .sb-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .sb-score {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .sb-score .num {
+      font-size: 30px;
+      font-weight: bold;
+      color: var(--navy);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sb-score .of {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .sb-band {
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--white);
+      background: var(--gray-500);
+      padding: 4px 10px;
+    }
+
+    .sb-progress {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .sb-progress .meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .bar {
+      height: 8px;
+      background: var(--line);
+      overflow: hidden;
+    }
+
+    .bar>div {
+      height: 100%;
+      width: 0%;
+      background: var(--blue);
+      transition: width .2s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    .sb-jump {
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--blue);
+      background: transparent;
+      border: 2px solid var(--blue);
+      font-family: inherit;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    .sb-jump:hover {
+      background: var(--pale-cyan);
+    }
+
+    /* ============ Layout ============ */
+    .shell {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 44px;
+    }
+
+    nav.sidenav {
+      position: sticky;
+      top: 140px;
+      align-self: start;
+      padding: 32px 0 40px;
+      max-height: calc(100vh - 160px);
+      overflow-y: auto;
+    }
+
+    nav.sidenav .nav-title {
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    nav.sidenav a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--ink);
+      font-size: 12.5px;
+      padding: 6px 10px;
+      border-left: 3px solid var(--line);
+      line-height: 1.3;
+    }
+
+    nav.sidenav a:hover {
+      background: var(--gray);
+    }
+
+    nav.sidenav a.active {
+      border-left-color: var(--blue);
+      color: var(--blue);
+      font-weight: bold;
+      background: var(--gray);
+    }
+
+    nav.sidenav a.oos {
+      opacity: .45;
+    }
+
+    .nav-ref {
+      font-size: 10px;
+      font-weight: bold;
+      color: var(--gray-500);
+      letter-spacing: .5px;
+      flex: none;
+      width: 26px;
+    }
+
+    nav.sidenav a.active .nav-ref {
+      color: var(--blue);
+    }
+
+    .nav-pct {
+      margin-left: auto;
+      font-size: 11px;
+      font-weight: bold;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    main {
+      padding: 32px 0 80px;
+      min-width: 0;
+    }
+
+    section {
+      margin-bottom: 44px;
+      scroll-margin-top: 150px;
+    }
+
+    .sec-label {
+      font-size: 11px;
+      font-weight: bold;
+      color: var(--blue);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--navy);
+      margin-bottom: 12px;
+    }
+
+    p.intro {
+      max-width: 74ch;
+      margin-bottom: 14px;
+    }
+
+    /* ============ Scoping panel ============ */
+    .panel {
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--blue);
+      padding: 20px 22px;
+      margin-bottom: 18px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      font-family: inherit;
+      font-size: 14px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 0;
+      background: var(--white);
+      color: var(--ink);
+    }
+
+    .scope-q {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .scope-q:first-of-type {
+      border-top: none;
+    }
+
+    .scope-text {
+      flex: 1;
+    }
+
+    .scope-text b {
+      display: block;
+      font-size: 14px;
+      color: var(--navy);
+    }
+
+    .scope-text span {
+      font-size: 12.5px;
+      color: var(--gray-700);
+    }
+
+    .toggle {
+      flex: none;
+      display: flex;
+      border: 2px solid var(--blue);
+    }
+
+    .toggle button {
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 6px 16px;
+      border: none;
+      background: var(--white);
+      color: var(--blue);
+      cursor: pointer;
+    }
+
+    .toggle button[aria-pressed="true"] {
+      background: var(--blue);
+      color: var(--white);
+    }
+
+    /* ============ Questions ============ */
+    .adv-head {
+      border-top: 3px solid var(--blue);
+      padding-top: 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .adv-head h2 {
+      margin: 0;
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .adv-score {
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--muted);
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      padding-top: 3px;
+    }
+
+    .adv-purpose {
+      font-size: 13px;
+      color: var(--gray-700);
+      max-width: 74ch;
+      margin-bottom: 16px;
+    }
+
+    .q {
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--line);
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      background: var(--white);
+    }
+
+    .q[data-state="2"] {
+      border-left-color: var(--green);
+      background: #FAFBFF;
+    }
+
+    .q[data-state="1"] {
+      border-left-color: var(--orange);
+    }
+
+    .q[data-state="0"] {
+      border-left-color: var(--red);
+    }
+
+    .q[data-state="na"] {
+      border-left-color: var(--gray-500);
+      opacity: .72;
+    }
+
+    .q-num {
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1.5px;
+      color: var(--blue);
+    }
+
+    .q-text {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--navy);
+      margin: 3px 0 6px;
+      max-width: 74ch;
+    }
+
+    .q-help {
+      font-size: 13px;
+      color: var(--gray-700);
+      max-width: 74ch;
+      margin-bottom: 12px;
+    }
+
+    .q-help b {
+      color: var(--blue-ink);
+    }
+
+    .opts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      border: 1px solid var(--line);
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .opts button {
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: bold;
+      padding: 8px 14px;
+      border: none;
+      border-right: 1px solid var(--line);
+      background: var(--white);
+      color: var(--gray-700);
+      cursor: pointer;
+    }
+
+    .opts button:last-child {
+      border-right: none;
+    }
+
+    .opts button:hover {
+      background: var(--gray);
+    }
+
+    .opts button[aria-pressed="true"] {
+      background: var(--blue);
+      color: var(--white);
+    }
+
+    .opts button[data-v="na"][aria-pressed="true"] {
+      background: var(--gray-500);
+    }
+
+    .oos-banner {
+      background: var(--gray);
+      border-left: 6px solid var(--gray-500);
+      padding: 14px 18px;
+      font-size: 13.5px;
+      color: var(--gray-700);
+    }
+
+    /* ============ Results ============ */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .overall-card {
+      background: var(--navy);
+      color: var(--white);
+      padding: 22px;
+      border-left: 6px solid var(--blue);
+    }
+
+    .overall-card .k {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: .8;
+      font-weight: bold;
+    }
+
+    .overall-card .v {
+      font-size: 56px;
+      font-weight: bold;
+      line-height: 1;
+      margin: 8px 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .overall-card .band {
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .overall-card .detail {
+      font-size: 12px;
+      opacity: .85;
+      margin-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, .3);
+      padding-top: 10px;
+    }
+
+    table.scores {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    table.scores th {
+      background: var(--blue);
+      color: var(--white);
+      font-weight: bold;
+      text-align: left;
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+
+    table.scores td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #eaeaea;
+      vertical-align: middle;
+    }
+
+    table.scores tbody tr:nth-child(even) {
+      background: var(--gray);
+    }
+
+    table.scores td.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-weight: bold;
+      width: 58px;
+    }
+
+    table.scores td.ref {
+      width: 62px;
+      color: var(--muted);
+      font-weight: bold;
+      font-size: 11px;
+    }
+
+    .minibar {
+      height: 10px;
+      background: var(--line);
+      width: 140px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .minibar>div {
+      height: 100%;
+      background: var(--blue);
+    }
+
+    .band-pill {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--white);
+      padding: 2px 7px;
+      white-space: nowrap;
+    }
+
+    .b-none {
+      background: var(--red);
+    }
+
+    .b-dev {
+      background: var(--orange);
+    }
+
+    .b-est {
+      background: var(--blue-mid);
+    }
+
+    .b-emb {
+      background: var(--green);
+    }
+
+    .b-oos {
+      background: var(--gray-500);
+    }
+
+    .gap-item {
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--red);
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      font-size: 13.5px;
+    }
+
+    .gap-item.partial {
+      border-left-color: var(--orange);
+    }
+
+    .gap-item .g-ref {
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: var(--blue);
+    }
+
+    .gap-item .g-q {
+      font-weight: bold;
+      color: var(--navy);
+      margin: 2px 0 4px;
+    }
+
+    .gap-item .g-exp {
+      color: var(--gray-700);
+    }
+
+    .note-panel {
+      background: var(--pale-cyan);
+      border-left: 6px solid var(--navy);
+      padding: 16px 20px;
+      font-size: 13.5px;
+      margin-top: 16px;
+      max-width: 78ch;
+    }
+
+    .note-panel b {
+      color: var(--navy);
+    }
+
+    .source {
+      font-size: 10px;
+      color: var(--gray-700);
+      margin-top: 14px;
+      max-width: 78ch;
+    }
+
+    .empty {
+      font-size: 13.5px;
+      color: var(--gray-700);
+      padding: 14px 0;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .btn-primary {
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: bold;
+      background: var(--blue);
+      color: var(--white);
+      border: 2px solid var(--blue);
+      padding: 9px 18px;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      background: var(--navy);
+      border-color: var(--navy);
+    }
+
+    .btn-secondary {
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: bold;
+      background: var(--white);
+      color: var(--blue);
+      border: 2px solid var(--blue);
+      padding: 9px 18px;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background: var(--pale-cyan);
+    }
+
+    /* ============ Footer ============ */
+    footer {
+      background: var(--navy);
+      color: var(--white);
+      padding: 26px 24px;
+    }
+
+    .footer-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 12px;
+    }
+
+    footer .fm {
+      opacity: .85;
+    }
+
+    .back-top {
+      color: var(--white);
+      text-decoration: underline;
+      font-size: 12px;
+    }
+
+    /* ============ Responsive ============ */
+    @media (max-width:900px) {
+      .shell {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      nav.sidenav {
+        display: none;
+      }
+
+      .results-grid,
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 20px;
+      }
+
+      .scope-q {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width:560px) {
+      .classification {
+        display: none;
+      }
+
+      .opts {
+        width: 100%;
+      }
+
+      .opts button {
+        flex: 1 1 50%;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .minibar {
+        display: none;
+      }
+    }
+
+    /* ============ Print ============ */
+    @media print {
+
+      .topbar,
+      nav.sidenav,
+      .scoreboard,
+      .action-row,
+      .opts,
+      .toggle,
+      .sb-jump {
+        display: none !important;
+      }
+
+      .shell {
+        display: block;
+        max-width: none;
+      }
+
+      body {
+        font-size: 11px;
+      }
+
+      section {
+        page-break-inside: avoid;
+      }
+
+      .hero,
+      .overall-card,
+      table.scores th,
+      footer {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .q {
+        page-break-inside: avoid;
+      }
+    }
+
+    /* ============ Personal design system ============
+       Serif display / sans body, maroon accent, H2 and below in black.
+       Layout, spacing and motion are unchanged. */
+    body {
+      font-family: var(--font-sans);
+      line-height: 1.55;
+    }
+
+    .wordmark,
+    .hero h1,
+    section h2,
+    h2,
+    section h3,
+    h3,
+    .std-title,
+    .q-text,
+    .card h3,
+    .overall-card .v {
+      font-family: var(--font-display);
+    }
+
+    .hero h1 {
+      letter-spacing: -0.01em;
+    }
+
+    section h2,
+    h2,
+    section h3,
+    h3,
+    .principle h3,
+    .role h3,
+    .card h3 {
+      color: var(--ink);
+    }
+
+    .sec-label,
+    .eyebrow,
+    .nav-title,
+    .classification,
+    .line-tag {
+      letter-spacing: 0.04em;
+    }
+
+    a {
+      text-underline-offset: 2px;
+    }
+
+    a:hover {
+      color: var(--navy);
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    [tabindex]:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px;
+    }
+
+    .pds-disclaimer-bar {
+      background: var(--blue);
+      color: var(--white);
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 10px 24px;
+      line-height: 1.4;
+    }
+
+    .pds-disclaimer-bar span {
+      display: block;
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    @media print {
+      .pds-disclaimer-bar {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div class="wordmark">MyOrg<span>Enterprise Risk Management</span></div>
+    <div class="topbar-actions">
+      <span class="classification">Reference template</span>
+      <button class="btn" onclick="window.print()">Print / Save PDF</button>
+    </div>
+  </header>
+
+  <div class="hero" id="top">
+    <div class="hero-inner">
+      <div class="eyebrow">ERM Advisory &nbsp;&middot;&nbsp; AI Risk Series &nbsp;&middot;&nbsp; Self-Assessment</div>
+      <h1>AI control self-assessment</h1>
+      <p class="sub">Assess a single AI use-case against the control expectations set out in ERM-ADV-AI-001 to 013.
+        Answers are held in this browser tab only &mdash; nothing is saved or submitted. Export your answers before
+        closing the page.</p>
+    </div>
+  </div>
+
+  <div class="scoreboard">
+    <div class="sb-inner">
+      <div class="sb-score">
+        <span class="num" id="sbNum">&mdash;</span><span class="of">/ 100 overall</span>
+      </div>
+      <span class="sb-band" id="sbBand">Not started</span>
+      <div class="sb-progress">
+        <div class="meta" id="sbMeta">0 of 0 applicable questions answered</div>
+        <div class="bar">
+          <div id="sbBar"></div>
+        </div>
+      </div>
+      <button class="sb-jump" onclick="document.getElementById('results').scrollIntoView()">View results</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <nav class="sidenav" aria-label="Assessment navigation">
+      <div class="nav-title">Assessment</div>
+      <div id="navList"></div>
+    </nav>
+
+    <main>
+      <section id="scope">
+        <div class="sec-label">Step 1</div>
+        <h2>Use-case and scope</h2>
+        <p class="intro">Identify the use-case being assessed, then answer four scoping questions. These determine
+          which advisories apply. Advisories 006, 007 and 008 apply only where the AI has access to firm systems or is
+          permitted to act; 005 applies where capability is supplied by a third party; 013 where output reaches people
+          outside the immediate team.</p>
+
+        <div class="panel">
+          <div class="field-row">
+            <div class="field"><label for="ucName">Use-case name</label><input id="ucName" type="text"
+                placeholder="e.g. Client reporting drafting assistant"></div>
+            <div class="field"><label for="ucOwner">Use-case owner</label><input id="ucOwner" type="text"
+                placeholder="Name / role"></div>
+            <div class="field"><label for="ucTier">Assessed risk tier</label><select id="ucTier">
+                <option value="">Not yet tiered</option>
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+              </select></div>
+          </div>
+          <div id="scopeList"></div>
+        </div>
+      </section>
+
+      <div id="advSections"></div>
+
+      <section id="results">
+        <div class="sec-label">Results</div>
+        <h2>Assessment result</h2>
+        <p class="intro">Scores are calculated only from applicable questions. Questions marked <b>Not applicable</b>
+          and advisories placed out of scope are excluded from both the advisory score and the overall score.</p>
+
+        <div class="results-grid">
+          <div class="overall-card">
+            <div class="k">Overall</div>
+            <div class="v" id="ovNum">&mdash;</div>
+            <div class="band" id="ovBand">Not started</div>
+            <div class="detail" id="ovDetail">Answer the questions above to generate a score.</div>
+          </div>
+          <div>
+            <table class="scores">
+              <thead>
+                <tr>
+                  <th>Ref</th>
+                  <th>Control area</th>
+                  <th></th>
+                  <th style="text-align:right">Score</th>
+                  <th>Rating</th>
+                </tr>
+              </thead>
+              <tbody id="scoreRows"></tbody>
+            </table>
+            <div class="source">Overall score is question-weighted: total points earned divided by total points
+              available across all applicable questions. It is not an average of the advisory scores, so control areas
+              with more questions carry proportionately more weight.</div>
+          </div>
+        </div>
+
+        <h2 style="margin-top:26px">Gap register</h2>
+        <p class="intro">Every question answered <b>Not in place</b> or <b>Partially in place</b>, in advisory order.
+          Use this as the starting point for a remediation plan with owners and dates.</p>
+        <div id="gapList"></div>
+
+        <div class="note-panel">
+          <b>What this assessment is:</b> a structured first-line self-assessment producing a draft view of control
+          maturity for one use-case. It is not a risk rating, a control effectiveness conclusion, or an approval.
+          Second-line challenge and evidence testing sit outside this tool. A high score based on assertion rather than
+          evidence is exactly the outcome the advisories are written to prevent.
+        </div>
+
+        <div class="action-row">
+          <button class="btn-primary" onclick="window.print()">Print / Save PDF</button>
+          <button class="btn-secondary" id="btnExport">Export answers (JSON)</button>
+          <button class="btn-secondary" id="btnImport">Import answers</button>
+          <button class="btn-secondary" id="btnReset">Reset assessment</button>
+          <input type="file" id="fileInput" accept="application/json,.json" style="display:none">
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="pds-disclaimer-bar"><span>Views expressed are the author's own and do not represent those of any employer or client. This is a reference template, not firm policy, and is not investment, legal, or compliance advice.</span></div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="fm">&copy; MyOrg Ltd. &nbsp;&middot;&nbsp; Enterprise Risk Management &nbsp;&middot;&nbsp;
+        ERM-ADV-AI-SA-01 &nbsp;&middot;&nbsp; Reference template &mdash; adapt before use</div>
+      <a class="back-top" href="#top">Back to top &uarr;</a>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      "use strict";
+
+      /* ================= Scoping ================= */
+      var SCOPES = [
+        {
+          id: "thirdparty", def: true,
+          q: "Is any part of the AI capability supplied by, or embedded within, a third party?",
+          h: "Includes foundation models, AI applications, and AI features switched on inside software the firm already licenses."
+        },
+        {
+          id: "access", def: false,
+          q: "Does the AI system access firm systems, repositories, or data beyond what the user provides in the request?",
+          h: "Includes retrieval from document stores, database or API access, and mailbox or calendar access."
+        },
+        {
+          id: "act", def: false,
+          q: "Can the AI system take actions with effects outside itself, rather than only producing output for a person?",
+          h: "Includes writing to systems, sending messages, calling tools, and triggering downstream processes."
+        },
+        {
+          id: "untrusted", def: false,
+          q: "Does the AI system process content the firm does not control?",
+          h: "Includes inbound email, uploaded documents from outside the firm, web pages, and third-party tool responses."
+        },
+        {
+          id: "external", def: true,
+          q: "Does the output reach clients, counterparties, candidates, or the public, or inform decisions about individuals?",
+          h: "Also applies where the firm makes statements about this capability in marketing or due-diligence responses."
+        }
+      ];
+
+      /* ================= Advisories and questions ================= */
+      var ADV = [
+        {
+          ref: "001", id: "a001", name: "Human in the loop",
+          purpose: "Whether human oversight cited as a control can actually achieve its objective.",
+          scope: null,
+          qs: [
+            { q: "Is the reviewer a named role with the competence to judge the output independently?", h: "<b>In place</b> means the reviewing role is documented and could reasonably have produced or verified the work without the AI &mdash; not simply that someone signs off." },
+            { q: "Can the reviewer realistically review, and does the workflow stop the output until they have?", h: "<b>In place</b> means volume and time per item are quantified and defensible, and the output cannot proceed on a timeout or be bypassed." },
+            { q: "Are there documented review criteria and a defined escalation route?", h: "<b>In place</b> means the reviewer knows what wrong looks like for this use-case, and knows where to send what they cannot resolve." },
+            { q: "Are reviews logged, and is control degradation monitored?", h: "<b>In place</b> means reviewer, timestamp and disposition are recorded and testable, and indicators such as rejection rates trending to zero are actively watched." }
+          ]
+        },
+        {
+          ref: "002", id: "a002", name: "Intake and risk tiering",
+          purpose: "Whether the use-case is registered, tiered, and owned before it is relied upon.",
+          scope: null,
+          qs: [
+            { q: "Is there a named use-case owner and accountable executive, with the affected process documented?", h: "<b>In place</b> means both are recorded in the inventory and the submission states what depends on the output being right." },
+            { q: "Are the data classifications of inputs and outputs recorded?", h: "<b>In place</b> means classifications are stated explicitly, including anything personal, client-identifying, or confidential." },
+            { q: "Has a risk tier been assigned against published criteria, with proportionate controls mapped?", h: "<b>In place</b> means the tier, the rationale, and the required control set are documented &mdash; and deviations explained." },
+            { q: "Was approval recorded before production use, and is the inventory entry re-attested?", h: "<b>In place</b> means dated approval precedes live use, and there is a re-attestation frequency and a decommissioning route." }
+          ]
+        },
+        {
+          ref: "003", id: "a003", name: "Data and input controls",
+          purpose: "Whether what is submitted to the AI system is controlled, minimised and traceable.",
+          scope: null,
+          qs: [
+            { q: "Is the tool on the approved list for the data classifications this use-case handles?", h: "<b>In place</b> means an approval record exists that names the permitted classifications, not just the tool." },
+            { q: "Are retention, model-training and sub-processing terms confirmed in writing?", h: "<b>In place</b> means the firm has evidence of whether inputs are retained, used for training, or shared &mdash; not an inference from marketing material." },
+            { q: "Is at least one technical control enforcing this, alongside data minimisation?", h: "<b>In place</b> means tenancy isolation, egress or data-loss-prevention rules, or disabled provider-side training &mdash; plus removal or masking of data the outcome does not need." },
+            { q: "Does retrieval respect source-system entitlements, and have cross-border flows been assessed?", h: "<b>In place</b> means the system reads with the requesting user's permissions, source repositories were reviewed for over-sharing, and processing locations are documented." },
+            { q: "Can the firm establish what was submitted, without the log becoming an unprotected store?", h: "<b>In place</b> means input traceability exists proportionate to tier, and the log store is itself classified, access-controlled and retention-bound." }
+          ]
+        },
+        {
+          ref: "004", id: "a004", name: "Output reliability",
+          purpose: "Whether the correctness of AI output is defined, evidenced and monitored.",
+          scope: null,
+          qs: [
+            { q: "Is there a defined accuracy standard and error tolerance for this use-case?", h: "<b>In place</b> means the submission states what correct output looks like and which categories of error matter most." },
+            { q: "Is factual output grounded in governed sources with attribution a reviewer can follow?", h: "<b>In place</b> means retrieval from identified, current sources with citations that resolve &mdash; not instruction to the model not to invent content." },
+            { q: "Was the system evaluated against a retained test set before production, to a pre-set threshold?", h: "<b>In place</b> means documented results against representative and edge cases, with the pass threshold defined in advance." },
+            { q: "Are there automated guardrails and ongoing quality sampling in production?", h: "<b>In place</b> means scope, format or reconciliation checks in the system, plus a defined sample checked by someone competent to judge it, with results trended." },
+            { q: "Are known limitations communicated to users, and is the system re-evaluated on change?", h: "<b>In place</b> means users know what it is unreliable for, and evaluation repeats when the model, prompt, sources or scope change." }
+          ]
+        },
+        {
+          ref: "005", id: "a005", name: "Third-party and embedded AI",
+          purpose: "Whether supplied AI capability is diligenced, contracted for, and survivable if withdrawn.",
+          scope: "thirdparty",
+          qs: [
+            { q: "Is the supplier AI capability identified and registered, including features enabled by default?", h: "<b>In place</b> means suppliers have been asked directly where their products use AI, and the answer is reflected in the inventory." },
+            { q: "Are model provenance, processing locations and sub-processors known, with security and privacy assessments complete?", h: "<b>In place</b> means the firm knows what sits behind the feature, or has explicitly accepted not knowing at a documented tier." },
+            { q: "Do contract terms cover training use, deletion, security, incident notification, IP indemnity and audit rights?", h: "<b>In place</b> means the protections exist in the agreement, or a deviation has been accepted and recorded." },
+            { q: "Does the firm hold its own evidence that the capability performs adequately for this use?", h: "<b>In place</b> means evaluation, pilot results or reference testing &mdash; not reliance on supplier claims alone." },
+            { q: "Are change notification rights in place, and is there a credible fallback if the capability is withdrawn?", h: "<b>In place</b> means a named owner receives change notices within a defined window, and the fallback has been confirmed as viable rather than asserted." }
+          ]
+        },
+        {
+          ref: "006", id: "a006", name: "Agent identity and access",
+          purpose: "Whether AI access to firm systems is attributable, least-privilege and revocable.",
+          scope: "access",
+          qs: [
+            { q: "Does the AI operate under a distinct non-human identity with a named human owner?", h: "<b>In place</b> means it is distinguishable in logs from human users and other agents, and is not a shared service account." },
+            { q: "Are entitlements least-privilege, justified against the use-case, and bounded when acting for a user?", h: "<b>In place</b> means every entitlement traces to a use-case requirement, and the system cannot reach what the requesting user could not reach." },
+            { q: "Are credentials held in an approved vault, scoped and rotated?", h: "<b>In place</b> means no secrets in prompts, configuration files, code repositories or logs." },
+            { q: "Are entitlements recertified, and has revocation been tested?", h: "<b>In place</b> means review at least as often as comparable human privileged access, and a tested method to disable the identity and stop in-flight activity." }
+          ]
+        },
+        {
+          ref: "007", id: "a007", name: "Autonomy and action boundaries",
+          purpose: "Whether what the AI may do is defined in advance and enforced by the system.",
+          scope: "act",
+          qs: [
+            { q: "Are permitted actions and tools an enumerated allow-list, with everything else denied?", h: "<b>In place</b> means adding a tool is a change requiring assessment, not a configuration convenience." },
+            { q: "Do material or irreversible actions require explicit human authorisation, within enforced quantitative limits?", h: "<b>In place</b> means authorisation cannot be satisfied by a timeout, and value, volume, rate and time-window limits halt rather than log on breach." },
+            { q: "Are the boundaries enforced outside the model, rather than by instruction?", h: "<b>In place</b> means permissions, gateways, policy enforcement or validation layers refuse the action &mdash; the prompt is not the control." },
+            { q: "Is there a tested stop mechanism and a defined safe state?", h: "<b>In place</b> means a documented runbook, named responders, and confirmation by test that stopping actually stops it." },
+            { q: "Are all actions logged and correlated, with adversarial testing and staged rollout before scale?", h: "<b>In place</b> means the identity, triggering request, parameters and result are reconstructable, and failure scenarios were tested before production." }
+          ]
+        },
+        {
+          ref: "008", id: "a008", name: "Prompt injection and untrusted content",
+          purpose: "Whether content the firm does not control can influence what the AI does.",
+          scope: "untrusted",
+          qs: [
+            { q: "Are all content sources enumerated and classified as trusted or untrusted?", h: "<b>In place</b> means uploads, retrieved documents, inbound messages, web content and tool responses have each been considered." },
+            { q: "Is untrusted content held separately from system instructions?", h: "<b>In place</b> means the architecture does not place processed content where it is interpreted as operator instruction, or compensates where the platform cannot guarantee this." },
+            { q: "Are entitlements minimised and outbound destinations restricted, specifically to contain injection?", h: "<b>In place</b> means unrestricted outbound capability is not combined with sensitive data access, and destinations are on an approved list." },
+            { q: "Do side-effectful actions derived from that content require human confirmation, with output validated downstream?", h: "<b>In place</b> means the confirmation shows the actual action, and output is encoded before other systems consume it." },
+            { q: "Has the workflow been tested adversarially, with findings closed?", h: "<b>In place</b> means injection scenarios relevant to its inputs were tested before deployment and after material change." }
+          ]
+        },
+        {
+          ref: "009", id: "a009", name: "Logging and records",
+          purpose: "Whether AI-assisted activity can be reconstructed and retained as required.",
+          scope: null,
+          qs: [
+            { q: "Is a defined log set implemented, covering request, output, model version, sources, actor and disposition?", h: "<b>In place</b> means the log set was specified to answer questions the firm expects to be asked &mdash; not whatever the platform emits by default." },
+            { q: "Are logs integrity-protected and access-controlled?", h: "<b>In place</b> means protection proportionate to tier, and restricted access recognising that logs may contain confidential or personal content." },
+            { q: "Is retention aligned to records requirements, with legal hold operable?", h: "<b>In place</b> means periods agreed with Records Management, Compliance and Legal &mdash; and hold and export confirmed where a supplier holds the log." },
+            { q: "Is there end-to-end traceability, and are records and supervision obligations covered?", h: "<b>In place</b> means an output traces to its inputs, sources and decisions, and client-facing output sits within existing supervision arrangements." },
+            { q: "Is completeness periodically tested by reconstructing a past interaction?", h: "<b>In place</b> means reconstruction has actually been attempted and evidenced, not assumed from the presence of a log." }
+          ]
+        },
+        {
+          ref: "010", id: "a010", name: "Change control",
+          purpose: "Whether changes to models, prompts and configuration are assessed before they take effect.",
+          scope: null,
+          qs: [
+            { q: "Are prompts, instructions and configuration under version control with recorded approval?", h: "<b>In place</b> means authorship, review and approval are recorded, change categories are defined, and a prior state can be restored." },
+            { q: "Is regression testing performed against a retained baseline before a change goes live?", h: "<b>In place</b> means results are compared to the previous baseline, and that baseline still exists." },
+            { q: "Do supplier change notifications reach a named owner within a defined response window?", h: "<b>In place</b> means notification obligations exist and deprecation timelines are tracked." },
+            { q: "Is the model version pinned or staged, or is its absence compensated by monitoring?", h: "<b>In place</b> means the firm uses version control where the provider offers it, and has recorded and compensated for it where it does not." },
+            { q: "Is there post-change monitoring with a rollback trigger, and are change records linked to the use-case?", h: "<b>In place</b> means a defined stabilisation period, a workable rollback route, and change history retrievable against the inventory entry." }
+          ]
+        },
+        {
+          ref: "011", id: "a011", name: "Monitoring and effectiveness",
+          purpose: "Whether continued control effectiveness is evidenced rather than assumed.",
+          scope: null,
+          qs: [
+            { q: "Are there defined indicators with thresholds, owners and a specified response?", h: "<b>In place</b> means a small set of meaningful measures &mdash; quality, exception and override rates, volume, incidents &mdash; each with an action on breach." },
+            { q: "Is a proportion of live output independently sampled and trended?", h: "<b>In place</b> means assessment by someone other than the person who produced or approved the output." },
+            { q: "Is there an error and incident route, with read-across and linkage to complaints?", h: "<b>In place</b> means AI-related errors reach the firm's incident process and lessons are applied to comparable use-cases." },
+            { q: "Is actual usage compared to the approved design, with a trigger on divergence?", h: "<b>In place</b> means volume, user population, task types and data classifications are monitored against the approved parameters." },
+            { q: "Is the use-case re-attested periodically and reported into governance with escalation triggers?", h: "<b>In place</b> means evidence-based re-attestation and pre-agreed triggers &mdash; including a trigger to suspend the use-case." }
+          ]
+        },
+        {
+          ref: "012", id: "a012", name: "Acceptable use and competency",
+          purpose: "Whether the people relying on the AI know the rules and can judge the output.",
+          scope: null,
+          qs: [
+            { q: "Is a current acceptable-use standard published and accessible to users of this use-case?", h: "<b>In place</b> means it names permitted tools, permitted data classifications and prohibited uses, specifically enough to apply in the moment." },
+            { q: "Is role-appropriate training assigned and completion tracked?", h: "<b>In place</b> means training is differentiated for higher-risk populations, and non-completion is escalated through the normal route." },
+            { q: "Where a person is the control, is their competency for this specific use-case recorded?", h: "<b>In place</b> means competency is established and evidenced &mdash; not inferred from job title or general awareness training." },
+            { q: "Are practical limitations communicated, with a visible route to ask and to report?", h: "<b>In place</b> means users know the observed failure modes, and can raise questions or self-report errors without penalty." },
+            { q: "Is attestation obtained for higher-tier use, and is guidance refreshed when capability changes?", h: "<b>In place</b> means refresh is triggered by change rather than waiting for the annual cycle." }
+          ]
+        },
+        {
+          ref: "013", id: "a013", name: "Disclosure and transparency",
+          purpose: "Whether AI involvement is disclosed where required, and claims about it are substantiated.",
+          scope: "external",
+          qs: [
+            { q: "Is there a recorded determination of whether disclosure is required, with Legal or Compliance input?", h: "<b>In place</b> means the determination and its rationale are documented against the use-case &mdash; whichever way it went." },
+            { q: "Is disclosure wording reviewed through the normal route, with interaction disclosure where applicable?", h: "<b>In place</b> means wording is not drafted ad hoc, and anyone who might believe they are dealing with a human is told otherwise and offered a route to a person." },
+            { q: "Are external claims about this capability checked against the inventory before release?", h: "<b>In place</b> means marketing, RFP and due-diligence statements are substantiated and reconcilable across channels." },
+            { q: "Where AI affects employees or candidates, have transparency obligations been addressed?", h: "<b>In place</b> means Human Resources, Privacy and Legal have been involved." },
+            { q: "Is there a record of disclosures made, and a review trigger on change?", h: "<b>In place</b> means the firm can evidence what was disclosed, to whom and when, and revisits the position when capability or jurisdiction changes." }
+          ]
+        }
+      ];
+
+      var OPTIONS = [
+        { v: "0", label: "Not in place" },
+        { v: "1", label: "Partially" },
+        { v: "2", label: "In place" },
+        { v: "na", label: "N/A" }
+      ];
+
+      var BANDS = [
+        { min: 85, label: "Embedded", cls: "b-emb" },
+        { min: 65, label: "Established", cls: "b-est" },
+        { min: 40, label: "Developing", cls: "b-dev" },
+        { min: 0, label: "Not established", cls: "b-none" }
+      ];
+
+      function bandFor(pct) {
+        for (var i = 0; i < BANDS.length; i++) { if (pct >= BANDS[i].min) return BANDS[i]; }
+        return BANDS[BANDS.length - 1];
+      }
+
+      /* ================= State ================= */
+      var state = { scopes: {}, answers: {}, meta: {} };
+      SCOPES.forEach(function (s) { state.scopes[s.id] = s.def; });
+
+      function key(adv, i) { return adv.id + "-q" + i; }
+
+      /* ================= Render: scoping ================= */
+      var scopeList = document.getElementById("scopeList");
+      SCOPES.forEach(function (s) {
+        var row = document.createElement("div");
+        row.className = "scope-q";
+        row.innerHTML =
+          '<div class="scope-text"><b>' + s.q + '</b><span>' + s.h + '</span></div>' +
+          '<div class="toggle" role="group" aria-label="Yes or no">' +
+          '<button type="button" data-scope="' + s.id + '" data-val="yes">Yes</button>' +
+          '<button type="button" data-scope="' + s.id + '" data-val="no">No</button>' +
+          '</div>';
+        scopeList.appendChild(row);
+      });
+
+      scopeList.addEventListener("click", function (e) {
+        var b = e.target.closest("button[data-scope]");
+        if (!b) return;
+        state.scopes[b.getAttribute("data-scope")] = (b.getAttribute("data-val") === "yes");
+        syncScopes();
+        recalc();
+      });
+
+      function syncScopes() {
+        scopeList.querySelectorAll("button[data-scope]").forEach(function (b) {
+          var on = state.scopes[b.getAttribute("data-scope")];
+          var isYes = b.getAttribute("data-val") === "yes";
+          b.setAttribute("aria-pressed", String(on === isYes));
+        });
+      }
+
+      /* ================= Render: advisory sections ================= */
+      var advSections = document.getElementById("advSections");
+      var navList = document.getElementById("navList");
+
+      var navScope = document.createElement("a");
+      navScope.href = "#scope";
+      navScope.innerHTML = '<span class="nav-ref">Step</span><span>Use-case and scope</span>';
+      navList.appendChild(navScope);
+
+      ADV.forEach(function (adv) {
+        var sec = document.createElement("section");
+        sec.id = adv.id;
+        var qs = adv.qs.map(function (q, i) {
+          return '<div class="q" data-k="' + key(adv, i) + '">' +
+            '<div class="q-num">' + adv.ref + '.' + (i + 1) + '</div>' +
+            '<div class="q-text">' + q.q + '</div>' +
+            '<div class="q-help">' + q.h + '</div>' +
+            '<div class="opts" role="group" aria-label="Response">' +
+            OPTIONS.map(function (o) {
+              return '<button type="button" data-k="' + key(adv, i) + '" data-v="' + o.v + '">' + o.label + '</button>';
+            }).join("") +
+            '</div></div>';
+        }).join("");
+
+        sec.innerHTML =
+          '<div class="sec-label">ERM-ADV-AI-' + adv.ref + '</div>' +
+          '<div class="adv-head"><h2>' + adv.name + '</h2>' +
+          '<div class="adv-score" id="score-' + adv.id + '">Not answered</div></div>' +
+          '<p class="adv-purpose">' + adv.purpose + '</p>' +
+          '<div class="oos-banner" id="oos-' + adv.id + '" style="display:none"></div>' +
+          '<div class="qwrap" id="qwrap-' + adv.id + '">' + qs + '</div>';
+        advSections.appendChild(sec);
+
+        var a = document.createElement("a");
+        a.href = "#" + adv.id;
+        a.id = "nav-" + adv.id;
+        a.innerHTML = '<span class="nav-ref">' + adv.ref + '</span><span>' + adv.name +
+          '</span><span class="nav-pct" id="navpct-' + adv.id + '"></span>';
+        navList.appendChild(a);
+      });
+
+      var navRes = document.createElement("a");
+      navRes.href = "#results";
+      navRes.innerHTML = '<span class="nav-ref">&#9632;</span><span>Results</span>';
+      navList.appendChild(navRes);
+
+      advSections.addEventListener("click", function (e) {
+        var b = e.target.closest("button[data-k]");
+        if (!b) return;
+        var k = b.getAttribute("data-k"), v = b.getAttribute("data-v");
+        if (state.answers[k] === v) { delete state.answers[k]; } else { state.answers[k] = v; }
+        recalc();
+      });
+
+      /* ================= Scoring ================= */
+      function advInScope(adv) {
+        return !adv.scope || state.scopes[adv.scope] === true;
+      }
+
+      function scoreAdvisory(adv) {
+        var earned = 0, available = 0, answered = 0, counted = 0, na = 0;
+        adv.qs.forEach(function (q, i) {
+          var v = state.answers[key(adv, i)];
+          if (v === undefined) return;
+          answered++;
+          if (v === "na") { na++; return; }
+          counted++;
+          earned += parseInt(v, 10);
+          available += 2;
+        });
+        return {
+          earned: earned, available: available, answered: answered, counted: counted, na: na,
+          total: adv.qs.length,
+          pct: available > 0 ? Math.round(earned / available * 100) : null
+        };
+      }
+
+      function recalc() {
+        var totEarned = 0, totAvailable = 0, totQs = 0, totAnswered = 0;
+        var rows = "", gaps = "";
+
+        ADV.forEach(function (adv) {
+          var inScope = advInScope(adv);
+          var wrap = document.getElementById("qwrap-" + adv.id);
+          var oos = document.getElementById("oos-" + adv.id);
+          var navA = document.getElementById("nav-" + adv.id);
+          var navP = document.getElementById("navpct-" + adv.id);
+          var scoreEl = document.getElementById("score-" + adv.id);
+
+          if (!inScope) {
+            wrap.style.display = "none";
+            oos.style.display = "block";
+            oos.innerHTML = "<b>Out of scope for this use-case.</b> Based on your answers in Step 1, this control area " +
+              "does not apply and is excluded from scoring. If the use-case later gains this capability, revisit Step 1 " +
+              "and re-assess.";
+            navA.classList.add("oos");
+            navP.textContent = "n/a";
+            scoreEl.textContent = "Out of scope";
+            rows += '<tr><td class="ref">' + adv.ref + '</td><td>' + adv.name +
+              '</td><td><span class="minibar"><div style="width:0%"></div></span></td>' +
+              '<td class="num">&mdash;</td><td><span class="band-pill b-oos">Out of scope</span></td></tr>';
+            return;
+          }
+
+          wrap.style.display = "block";
+          oos.style.display = "none";
+          navA.classList.remove("oos");
+
+          var s = scoreAdvisory(adv);
+          totQs += s.total;
+          totAnswered += s.answered;
+          totEarned += s.earned;
+          totAvailable += s.available;
+
+          // per-question visual state
+          adv.qs.forEach(function (q, i) {
+            var k = key(adv, i);
+            var card = wrap.querySelector('.q[data-k="' + k + '"]');
+            var v = state.answers[k];
+            if (v === undefined) { card.removeAttribute("data-state"); }
+            else { card.setAttribute("data-state", v); }
+            card.querySelectorAll("button[data-v]").forEach(function (b) {
+              b.setAttribute("aria-pressed", String(b.getAttribute("data-v") === v));
+            });
+
+            if (v === "0" || v === "1") {
+              gaps += '<div class="gap-item' + (v === "1" ? " partial" : "") + '">' +
+                '<div class="g-ref">ERM-ADV-AI-' + adv.ref + ' &nbsp;&middot;&nbsp; Q' + adv.ref + '.' + (i + 1) +
+                ' &nbsp;&middot;&nbsp; ' + (v === "1" ? "Partially in place" : "Not in place") + '</div>' +
+                '<div class="g-q">' + q.q + '</div>' +
+                '<div class="g-exp">' + q.h + '</div></div>';
+            }
+          });
+
+          if (s.answered === 0) {
+            scoreEl.textContent = "Not answered";
+            navP.textContent = "";
+          } else if (s.pct === null) {
+            scoreEl.textContent = "All questions marked N/A";
+            navP.textContent = "n/a";
+          } else {
+            scoreEl.textContent = s.pct + "% \u00b7 " + s.answered + " of " + s.total + " answered";
+            navP.textContent = s.pct + "%";
+          }
+
+          var pct = s.pct === null ? 0 : s.pct;
+          var band = s.pct === null
+            ? { label: "Not applicable", cls: "b-oos" }
+            : bandFor(pct);
+          var pillLabel = s.answered === 0 ? "Not answered" : band.label;
+          var pillCls = s.answered === 0 ? "b-oos" : band.cls;
+
+          rows += '<tr><td class="ref">' + adv.ref + '</td><td>' + adv.name +
+            '</td><td><span class="minibar"><div style="width:' + pct + '%"></div></span></td>' +
+            '<td class="num">' + (s.answered === 0 || s.pct === null ? "&mdash;" : s.pct + "%") + '</td>' +
+            '<td><span class="band-pill ' + pillCls + '">' + pillLabel + '</span>' +
+            (s.answered > 0 && s.answered < s.total ? ' <span style="font-size:11px;color:#5A5A66">(partial)</span>' : '') +
+            '</td></tr>';
+        });
+
+        document.getElementById("scoreRows").innerHTML = rows;
+        document.getElementById("gapList").innerHTML = gaps ||
+          '<div class="empty">No gaps recorded yet. Gaps appear here as soon as a question is answered ' +
+          '&ldquo;Not in place&rdquo; or &ldquo;Partially&rdquo;.</div>';
+
+        var overall = totAvailable > 0 ? Math.round(totEarned / totAvailable * 100) : null;
+        var band = overall === null ? { label: "Not started", cls: "b-oos" } : bandFor(overall);
+
+        document.getElementById("sbNum").innerHTML = overall === null ? "&mdash;" : overall;
+        document.getElementById("sbBand").textContent = overall === null ? "Not started" : band.label;
+        document.getElementById("sbBand").style.background =
+          overall === null ? "var(--gray-500)" :
+            (band.cls === "b-emb" ? "var(--green)" : band.cls === "b-est" ? "var(--blue-mid)" :
+              band.cls === "b-dev" ? "var(--orange)" : "var(--red)");
+        document.getElementById("sbMeta").textContent =
+          totAnswered + " of " + totQs + " applicable questions answered";
+        document.getElementById("sbBar").style.width = totQs ? (totAnswered / totQs * 100) + "%" : "0%";
+
+        document.getElementById("ovNum").innerHTML = overall === null ? "&mdash;" : overall;
+        document.getElementById("ovBand").textContent = overall === null ? "Not started" : band.label;
+        document.getElementById("ovDetail").innerHTML = overall === null
+          ? "Answer the questions above to generate a score."
+          : totEarned + " of " + totAvailable + " points across " + totAnswered + " of " + totQs +
+          " applicable questions." +
+          (totAnswered < totQs ? "<br><b>Incomplete</b> &mdash; unanswered questions are excluded, so this score is provisional." : "");
+      }
+
+      /* ================= Export / import / reset ================= */
+      function collectMeta() {
+        return {
+          useCase: document.getElementById("ucName").value,
+          owner: document.getElementById("ucOwner").value,
+          tier: document.getElementById("ucTier").value
+        };
+      }
+
+      document.getElementById("btnExport").addEventListener("click", function () {
+        var payload = {
+          tool: "MyOrg ERM AI control self-assessment",
+          version: 1,
+          exported: new Date().toISOString(),
+          meta: collectMeta(),
+          scopes: state.scopes,
+          answers: state.answers
+        };
+        var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        var name = (payload.meta.useCase || "ai-self-assessment").replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+        a.href = url;
+        a.download = name + ".json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      document.getElementById("btnImport").addEventListener("click", function () {
+        document.getElementById("fileInput").click();
+      });
+
+      document.getElementById("fileInput").addEventListener("change", function (e) {
+        var f = e.target.files && e.target.files[0];
+        if (!f) return;
+        var reader = new FileReader();
+        reader.onload = function () {
+          try {
+            var d = JSON.parse(reader.result);
+            if (!d || typeof d !== "object" || !d.answers) throw new Error("bad shape");
+            state.answers = d.answers || {};
+            SCOPES.forEach(function (s) {
+              state.scopes[s.id] = (d.scopes && typeof d.scopes[s.id] === "boolean") ? d.scopes[s.id] : s.def;
+            });
+            if (d.meta) {
+              document.getElementById("ucName").value = d.meta.useCase || "";
+              document.getElementById("ucOwner").value = d.meta.owner || "";
+              document.getElementById("ucTier").value = d.meta.tier || "";
+            }
+            syncScopes();
+            recalc();
+          } catch (err) {
+            window.alert("That file could not be read as a saved assessment. Choose a file exported from this tool.");
+          }
+          e.target.value = "";
+        };
+        reader.readAsText(f);
+      });
+
+      document.getElementById("btnReset").addEventListener("click", function () {
+        if (!window.confirm("Clear all answers and start again? Exported files are not affected.")) return;
+        state.answers = {};
+        SCOPES.forEach(function (s) { state.scopes[s.id] = s.def; });
+        document.getElementById("ucName").value = "";
+        document.getElementById("ucOwner").value = "";
+        document.getElementById("ucTier").value = "";
+        syncScopes();
+        recalc();
+        document.getElementById("top").scrollIntoView();
+      });
+
+      window.addEventListener("beforeunload", function (e) {
+        if (Object.keys(state.answers).length === 0) return;
+        e.preventDefault();
+        e.returnValue = "";
+      });
+
+      /* ================= Scroll-spy ================= */
+      var links = Array.prototype.slice.call(document.querySelectorAll("nav.sidenav a"));
+      var targets = links.map(function (a) { return document.querySelector(a.getAttribute("href")); });
+      function spy() {
+        var pos = window.scrollY + 180, active = 0;
+        targets.forEach(function (s, i) { if (s && s.offsetTop <= pos) active = i; });
+        links.forEach(function (a, i) { a.classList.toggle("active", i === active); });
+      }
+      window.addEventListener("scroll", spy, { passive: true });
+
+      /* ================= Init ================= */
+      syncScopes();
+      recalc();
+      spy();
+    })();
+  </script>
+</body>
+
+</html>

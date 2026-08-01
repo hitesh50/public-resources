@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ERM advisory &mdash; prompt injection | MyOrg</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;700&family=Public+Sans:wght@400;700&display=swap');
+    :root {
+      /* Personal design system tokens (maroon family) */
+      --navy: #4A0E1F;
+      --blue: #800020;
+      --maroon-mid: #B33951;
+      --white: #FFFFFF;
+      --gray: #F5F0EF;
+      --pale-cyan: #F7E3E0;
+      --ink: #000000;
+      --muted: #474747;
+      --line: #E6E6E6;
+      --font-display: "Source Serif 4", Georgia, "Times New Roman", serif;
+      --font-sans: "Public Sans", "Helvetica Neue", Helvetica, "Liberation Sans", system-ui, sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--white);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    a {
+      color: var(--blue);
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    [tabindex]:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--blue);
+      outline-offset: 2px;
+    }
+
+    /* ============ Header ============ */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--navy);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 56px;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, .25);
+    }
+
+    .wordmark {
+      font-weight: bold;
+      font-size: 20px;
+      letter-spacing: .5px;
+    }
+
+    .wordmark span {
+      font-weight: normal;
+      opacity: .85;
+      font-size: 12px;
+      display: block;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: bold;
+      border: 1px solid var(--white);
+      background: transparent;
+      color: var(--white);
+      padding: 7px 14px;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+
+    .btn:hover {
+      background: var(--white);
+      color: var(--navy);
+    }
+
+    .classification {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border: 1px solid rgba(255, 255, 255, .5);
+      padding: 3px 8px;
+      border-radius: 2px;
+      opacity: .9;
+    }
+
+    /* ============ Hero ============ */
+    .hero {
+      background: var(--navy);
+      color: var(--white);
+      padding: 12px 18px 12px;
+    }
+
+    .hero-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-left: 4px solid var(--blue);
+      background: rgba(0, 10, 210, .35);
+      padding: 3px 8px;
+      margin-bottom: 10px;
+    }
+
+    .hero h1 {
+      font-size: 26px;
+      line-height: 1.2;
+      font-weight: bold;
+      max-width: 820px;
+    }
+
+    .hero p.sub {
+      margin-top: 8px;
+      font-size: 12px;
+      max-width: 760px;
+      opacity: .92;
+    }
+
+    .hero-meta {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      border-top: 1px solid rgba(255, 255, 255, .3);
+    }
+
+    .hero-meta div {
+      padding: 6px 28px 0 0;
+      margin-right: 28px;
+      font-size: 12px;
+    }
+
+    .hero-meta dt {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: .7;
+    }
+
+    .hero-meta dd {
+      font-weight: bold;
+      margin-top: 2px;
+    }
+
+    /* ============ Layout ============ */
+    .shell {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      gap: 48px;
+    }
+
+    nav.sidenav {
+      position: sticky;
+      top: 80px;
+      align-self: start;
+      padding-top: 40px;
+      padding-bottom: 40px;
+    }
+
+    nav.sidenav .nav-title {
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    nav.sidenav a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      font-size: 13px;
+      padding: 7px 12px;
+      border-left: 3px solid var(--line);
+      line-height: 1.35;
+    }
+
+    nav.sidenav a:hover {
+      background: var(--gray);
+    }
+
+    nav.sidenav a.active {
+      border-left-color: var(--blue);
+      color: var(--blue);
+      font-weight: bold;
+      background: var(--gray);
+    }
+
+    main {
+      padding: 40px 0 80px;
+      min-width: 0;
+    }
+
+    section {
+      margin-bottom: 52px;
+      scroll-margin-top: 76px;
+    }
+
+    .sec-label {
+      font-size: 11px;
+      font-weight: bold;
+      color: var(--blue);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    section h2 {
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--navy);
+      margin-bottom: 14px;
+    }
+
+    section h3 {
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--navy);
+      margin: 18px 0 6px;
+    }
+
+    section p {
+      margin-bottom: 11px;
+      max-width: 72ch;
+    }
+
+    section ul {
+      margin: 0 0 11px 20px;
+      max-width: 72ch;
+    }
+
+    section li {
+      margin-bottom: 6px;
+    }
+
+    /* Objective callout */
+    .objective {
+      background: var(--navy);
+      color: var(--white);
+      padding: 26px 28px;
+      margin: 18px 0;
+      border-left: 6px solid var(--blue);
+    }
+
+    .objective .obj-kicker {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: .8;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .objective p {
+      font-size: 14px;
+      line-height: 1.55;
+      margin: 0;
+      font-style: italic;
+      max-width: none;
+    }
+
+    /* Principles */
+    .principles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 6px;
+    }
+
+    .principle {
+      background: var(--gray);
+      padding: 18px 20px;
+      border-top: 3px solid var(--navy);
+    }
+
+    .principle h3 {
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+
+    .principle p {
+      font-size: 14px;
+      margin: 0;
+      color: #222;
+    }
+
+    .principle.wide {
+      grid-column: 1 / -1;
+    }
+
+    /* Standards accordion */
+    .std-progress {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--gray);
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .std-progress .bar {
+      flex: 1;
+      min-width: 180px;
+      height: 8px;
+      background: var(--line);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .std-progress .bar>div {
+      height: 100%;
+      width: 0%;
+      background: var(--blue);
+      transition: width .25s ease;
+    }
+
+    .std-progress .label {
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--navy);
+      white-space: nowrap;
+    }
+
+    .std-progress .hint {
+      font-size: 12px;
+      color: var(--muted);
+      width: 100%;
+    }
+
+    .standard {
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--navy);
+      margin-bottom: 10px;
+      background: var(--white);
+    }
+
+    .standard.met {
+      border-left-color: var(--blue);
+      background: #FAFBFF;
+    }
+
+    .std-head {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      text-align: left;
+      padding: 14px 16px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .std-head:hover {
+      background: var(--gray);
+    }
+
+    .std-num {
+      flex: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: var(--white);
+      font-weight: bold;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .standard.met .std-num {
+      background: var(--blue);
+    }
+
+    .std-title {
+      font-weight: bold;
+      color: var(--ink);
+      flex: 1;
+    }
+
+    .std-caret {
+      flex: none;
+      font-size: 12px;
+      color: var(--muted);
+      transition: transform .2s ease;
+    }
+
+    .standard[data-open="true"] .std-caret {
+      transform: rotate(180deg);
+    }
+
+    .std-body {
+      display: none;
+      padding: 0 16px 16px 56px;
+    }
+
+    .standard[data-open="true"] .std-body {
+      display: block;
+    }
+
+    .std-body p {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .std-check {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 13px;
+      background: var(--gray);
+      padding: 10px 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .std-check input {
+      margin-top: 2px;
+      accent-color: var(--blue);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .std-check b {
+      color: var(--navy);
+    }
+
+    /* Insufficient panel */
+    .flags {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 14px 0;
+    }
+
+    .flag {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--blue);
+      padding: 14px 16px;
+      font-size: 14px;
+    }
+
+    .flag b {
+      display: block;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+
+    .note-panel {
+      background: var(--pale-cyan);
+      border-left: 6px solid var(--navy);
+      padding: 16px 20px;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .note-panel b {
+      color: var(--navy);
+    }
+
+    /* Roles */
+    .roles {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .role {
+      background: var(--gray);
+      padding: 16px;
+    }
+
+    .role .line-tag {
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--white);
+      background: var(--navy);
+      display: inline-block;
+      padding: 3px 8px;
+      margin-bottom: 10px;
+    }
+
+    .role h3 {
+      margin: 0 0 6px;
+      font-size: 14px;
+    }
+
+    .role p {
+      font-size: 13px;
+      margin: 0;
+      color: #222;
+    }
+
+    /* Four questions */
+    .fourq-intro {
+      max-width: 72ch;
+    }
+
+    .fourq {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .q {
+      border: 1px solid var(--line);
+      padding: 16px;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: var(--white);
+    }
+
+    .q:hover {
+      background: var(--gray);
+    }
+
+    .q.yes {
+      border-color: var(--blue);
+      background: #FAFBFF;
+    }
+
+    .q input {
+      margin-top: 3px;
+      accent-color: var(--blue);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      flex: none;
+    }
+
+    .q .qword {
+      font-weight: bold;
+      color: var(--blue);
+      font-size: 15px;
+    }
+
+    .q p {
+      font-size: 13px;
+      margin: 4px 0 0;
+      color: #222;
+    }
+
+    .verdict {
+      padding: 16px 20px;
+      font-size: 14px;
+      font-weight: bold;
+      background: var(--gray);
+      border-left: 6px solid var(--muted);
+      color: var(--muted);
+    }
+
+    .verdict.ready {
+      background: var(--pale-cyan);
+      border-left-color: var(--blue);
+      color: var(--navy);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--navy);
+      color: var(--white);
+      padding: 28px 24px;
+      margin-top: 20px;
+    }
+
+    .footer-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 12px;
+    }
+
+    footer .fm {
+      opacity: .85;
+    }
+
+    .back-top {
+      color: var(--white);
+      text-decoration: underline;
+      font-size: 12px;
+    }
+
+    /* Mobile */
+    @media (max-width:840px) {
+      .shell {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      nav.sidenav {
+        position: static;
+        padding: 20px 0 0;
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        border-bottom: 1px solid var(--line);
+      }
+
+      nav.sidenav .nav-title {
+        display: none;
+      }
+
+      nav.sidenav a {
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        white-space: nowrap;
+        flex: none;
+      }
+
+      nav.sidenav a.active {
+        border-bottom-color: var(--blue);
+        background: transparent;
+      }
+
+      .principles,
+      .flags,
+      .fourq {
+        grid-template-columns: 1fr;
+      }
+
+      .roles {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .hero h1 {
+        font-size: 20px;
+      }
+
+      .std-body {
+        padding-left: 16px;
+      }
+    }
+
+    @media (max-width:520px) {
+      .roles {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        padding: 0 14px;
+      }
+
+      .classification {
+        display: none;
+      }
+    }
+
+    /* Print */
+    @media print {
+
+      .topbar,
+      .sidenav,
+      .btn,
+      .std-progress .hint {
+        display: none;
+      }
+
+      .shell {
+        display: block;
+      }
+
+      .standard {
+        border-left-color: var(--navy) !important;
+      }
+
+      .standard .std-body {
+        display: block !important;
+      }
+
+      .std-caret {
+        display: none;
+      }
+
+      section {
+        page-break-inside: avoid;
+      }
+
+      .hero,
+      .objective,
+      footer {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+
+    /* ============ Personal design system ============
+       Serif display / sans body, maroon accent, H2 and below in black.
+       Layout, spacing and motion are unchanged. */
+    body {
+      font-family: var(--font-sans);
+      line-height: 1.55;
+    }
+
+    .wordmark,
+    .hero h1,
+    section h2,
+    h2,
+    section h3,
+    h3,
+    .std-title,
+    .q-text,
+    .card h3,
+    .overall-card .v {
+      font-family: var(--font-display);
+    }
+
+    .hero h1 {
+      letter-spacing: -0.01em;
+    }
+
+    section h2,
+    h2,
+    section h3,
+    h3,
+    .principle h3,
+    .role h3,
+    .card h3 {
+      color: var(--ink);
+    }
+
+    .sec-label,
+    .eyebrow,
+    .nav-title,
+    .classification,
+    .line-tag {
+      letter-spacing: 0.04em;
+    }
+
+    a {
+      text-underline-offset: 2px;
+    }
+
+    a:hover {
+      color: var(--navy);
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    [tabindex]:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px;
+    }
+
+    .pds-disclaimer-bar {
+      background: var(--blue);
+      color: var(--white);
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 10px 24px;
+      line-height: 1.4;
+    }
+
+    .pds-disclaimer-bar span {
+      display: block;
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    @media print {
+      .pds-disclaimer-bar {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div class="wordmark">MyOrg<span>Enterprise Risk Management</span></div>
+    <div class="topbar-actions">
+      <span class="classification">Reference template</span>
+      <button class="btn" onclick="window.print()">Print / Save PDF</button>
+    </div>
+  </header>
+
+  <div class="hero" id="top">
+    <div class="hero-inner">
+      <div class="eyebrow">ERM Advisory &nbsp;&middot;&nbsp; AI Risk Series</div>
+      <h1>Prompt injection &mdash; handling untrusted content in AI workflows</h1>
+      <p class="sub">Content the AI reads is data, never instruction. This advisory sets out what Enterprise Risk Management expects where AI systems process content the firm does not control.</p>
+      <dl class="hero-meta">
+        <div>
+          <dt>Issued by</dt>
+          <dd>Enterprise Risk Management</dd>
+        </div>
+        <div>
+          <dt>Applies to</dt>
+          <dd>All MyOrg employees</dd>
+        </div>
+        <div>
+          <dt>Effective</dt>
+          <dd>Upon publication</dd>
+        </div>
+        <div>
+          <dt>Reference</dt>
+          <dd>ERM-ADV-AI-008</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="shell">
+    <nav class="sidenav" aria-label="Section navigation">
+      <div class="nav-title">On this page</div>
+      <a href="#purpose">1 &middot; Purpose</a>
+      <a href="#objective">2 &middot; Control objective</a>
+      <a href="#principles">3 &middot; Principles</a>
+      <a href="#standards">4 &middot; Minimum standards</a>
+      <a href="#limits">5 &middot; High-exposure patterns</a>
+      <a href="#roles">6 &middot; Roles &amp; responsibilities</a>
+      <a href="#selfcheck">7 &middot; What this means for you</a>
+    </nav>
+
+    <main>
+      <section id="purpose">
+        <div class="sec-label">Section 1</div>
+        <h2>Purpose</h2>
+        <p>GenAI systems do not reliably distinguish between instructions from their operator and instructions embedded in the content they are asked to process. Text placed in an email, a document, a web page, a file name, or a tool response can influence what the system does next.</p>
+        <p>Where an assistant only drafts text for a human, the consequence is usually limited. Where a system has entitlements and can act, the same weakness becomes a route to data disclosure or unauthorized action. This advisory sets out the minimum standards ERM expects.</p>
+      </section>
+
+      <section id="objective">
+        <div class="sec-label">Section 2</div>
+        <h2>The control objective</h2>
+        <p>A control exists to achieve an objective. For this control, the objective is:</p>
+        <div class="objective">
+          <div class="obj-kicker">Control Objective</div>
+          <p>To ensure that content processed by an AI system cannot cause it to take unintended actions or disclose information &mdash; by treating all content the firm does not control as data, and by containing the consequence of that content influencing the system's behavior.</p>
+        </div>
+        <p>Injection cannot currently be prevented reliably by detection or by instructing the model to ignore embedded commands. Control design must therefore assume that influence will sometimes succeed and limit what it can achieve.</p>
+      </section>
+
+      <section id="principles">
+        <div class="sec-label">Section 3</div>
+        <h2>Principles</h2>
+        <div class="principles">
+          <div class="principle">
+            <h3>Content is data, not command</h3>
+            <p>Anything retrieved, uploaded, received, or returned by a tool is untrusted input. It may inform the output; it must not determine the system's instructions or authorizations.</p>
+          </div>
+          <div class="principle">
+            <h3>Trust boundaries must be explicit</h3>
+            <p>The design should state which inputs are trusted and which are not. A boundary that has not been drawn cannot be defended.</p>
+          </div>
+          <div class="principle">
+            <h3>The blast radius equals the entitlements</h3>
+            <p>The damage achievable through injection is bounded by what the system can reach and do. Minimizing entitlements is the most effective mitigation available.</p>
+          </div>
+          <div class="principle">
+            <h3>Detection is imperfect; containment is the control</h3>
+            <p>Filters and classifiers reduce frequency but do not eliminate the class of attack. Egress restriction, action confirmation, and least privilege are what actually limit consequence.</p>
+          </div>
+          <div class="principle wide">
+            <h3>The dangerous combination is the one to look for</h3>
+            <p>Untrusted input, access to sensitive data, and the ability to send information outward &mdash; present together in one workflow &mdash; is the pattern that turns an inconvenience into an incident.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="standards">
+        <div class="sec-label">Section 4</div>
+        <h2>Minimum standards</h2>
+        <p>For this control to be accepted in an AI use-case submission, all seven of the following must be evidenced in
+          the control design. Expand each standard and use the checklist to gauge your design's readiness.</p>
+
+        <div class="std-progress">
+          <span class="label" id="stdCount">0 of 7 standards evidenced</span>
+          <div class="bar">
+            <div id="stdBar"></div>
+          </div>
+          <span class="hint">Self-assessment aid only &mdash; selections are not saved or submitted.</span>
+        </div>
+
+        <div id="standardsList">
+          <!-- Standards injected by script for consistency -->
+        </div>
+      </section>
+
+      <section id="limits">
+        <div class="sec-label">Section 5</div>
+        <h2>Patterns that require escalation</h2>
+        <p>Where the following appear in a workflow, the design should be escalated for security review before deployment:</p>
+        <div class="flags">
+          <div class="flag"><b>Reads external content</b>The system processes inbound email, web pages, or documents from outside the firm.</div>
+          <div class="flag"><b>Can transmit outward</b>The system can send messages, call external services, or fetch remote resources.</div>
+          <div class="flag"><b>Reaches sensitive data</b>The system can access confidential, personal, or client-identifying repositories.</div>
+          <div class="flag"><b>Acts without confirmation</b>The system executes side-effectful steps derived from processed content.</div>
+        </div>
+        <div class="note-panel">
+          <b>ERM expectation:</b> where more than one of these is present, the combination is treated as a high-risk design. Information Security review, adversarial testing, and either the removal of one leg of the combination or explicit governance acceptance are required before production use.
+        </div>
+      </section>
+
+      <section id="roles">
+        <div class="sec-label">Section 6</div>
+        <h2>Roles &amp; responsibilities</h2>
+        <div class="roles">
+          <div class="role">
+            <span class="line-tag">First line</span>
+            <h3>Use-case owners</h3>
+            <p>Identify untrusted inputs, minimize entitlements, and commission adversarial testing before deployment.</p>
+          </div>
+          <div class="role">
+            <span class="line-tag">Governance</span>
+            <h3>AI governance</h3>
+            <p>Screen submissions for the high-exposure combination and route them to Information Security.</p>
+          </div>
+          <div class="role">
+            <span class="line-tag">Second line</span>
+            <h3>Enterprise risk management</h3>
+            <p>Challenge reliance on detection-based mitigations and confirm containment controls are in place.</p>
+          </div>
+          <div class="role">
+            <span class="line-tag">Third line</span>
+            <h3>Internal audit</h3>
+            <p>Provide independent assurance over the security testing regime for agentic use-cases.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="selfcheck">
+        <div class="sec-label">Section 7</div>
+        <h2>What this means for you</h2>
+        <p class="fourq-intro">If your use-case processes content the firm does not control, be prepared to answer four questions. Tick each one you can answer with confidence:</p>
+        <div class="fourq" id="fourq">
+          <label class="q"><input type="checkbox">
+            <span><span class="qword">From where?</span>
+              <p>Which content does it process that the firm does not control?</p>
+            </span>
+          </label>
+          <label class="q"><input type="checkbox">
+            <span><span class="qword">Reach?</span>
+              <p>If that content could issue instructions, what could it reach?</p>
+            </span>
+          </label>
+          <label class="q"><input type="checkbox">
+            <span><span class="qword">Out?</span>
+              <p>Can anything leave &mdash; messages, requests, links, rendered content?</p>
+            </span>
+          </label>
+          <label class="q"><input type="checkbox">
+            <span><span class="qword">Tested?</span>
+              <p>Has this been tested adversarially, and were the findings closed?</p>
+            </span>
+          </label>
+        </div>
+        <div class="verdict" id="verdict">Answer all four before submission. If any answer is unclear, the control
+          design is not ready.</div>
+        <p style="margin-top:16px;">This advisory forms part of the ERM AI Risk Series. Questions should be directed to
+          <a href="#" onclick="return false;">Enterprise Risk Management</a>.</p>
+      </section>
+    </main>
+  </div>
+
+  <div class="pds-disclaimer-bar"><span>Views expressed are the author's own and do not represent those of any employer or client. This is a reference template, not firm policy, and is not investment, legal, or compliance advice.</span></div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="fm">&copy; MyOrg Ltd. &nbsp;&middot;&nbsp; Enterprise Risk Management &nbsp;&middot;&nbsp; ERM-ADV-AI-008
+        &nbsp;&middot;&nbsp; Reference template &mdash; adapt before use</div>
+      <a class="back-top" href="#top">Back to top &uarr;</a>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      /* ---------- Minimum standards data ---------- */
+      var standards = [
+        {
+                "t": "Documented trust boundaries",
+                "b": "The submission identifies every source of content the system processes and classifies each as trusted or untrusted, including file uploads, retrieved documents, inbound messages, web content, and tool responses.",
+                "c": "All content sources are enumerated and classified for trust."
+        },
+        {
+                "t": "Separation of instruction from content",
+                "b": "System instructions are held separately from processed content, and the architecture does not concatenate untrusted content into a position where it is interpreted as operator instruction. Where the platform cannot guarantee separation, this is stated and compensated for.",
+                "c": "Instruction and content separation is implemented or its absence is compensated."
+        },
+        {
+                "t": "Minimized entitlements for injection containment",
+                "b": "The system's access is reduced to the minimum the use-case requires, so that content-driven influence cannot reach data or functions outside that scope. This standard operates jointly with ERM-ADV-AI-006.",
+                "c": "Entitlements are minimized specifically with injection consequence in mind."
+        },
+        {
+                "t": "Egress restriction",
+                "b": "Where the system can transmit data outward &mdash; sending messages, calling external endpoints, rendering remote content, or following links &mdash; destinations are restricted to an approved set, and unrestricted outbound capability is not combined with sensitive data access.",
+                "c": "Outbound destinations are restricted to an approved list."
+        },
+        {
+                "t": "Human confirmation for content-derived actions",
+                "b": "Any side-effectful action whose parameters or trigger derive from untrusted content requires human confirmation, and the confirmation presents the actual action to be taken rather than a summary produced by the system itself.",
+                "c": "Content-derived side-effectful actions require explicit human confirmation."
+        },
+        {
+                "t": "Output validation before downstream consumption",
+                "b": "Output is validated and encoded before it is consumed by downstream systems, so that model output cannot inject content into databases, tickets, code, messages, or user interfaces.",
+                "c": "Outputs are validated and encoded before downstream consumption."
+        },
+        {
+                "t": "Adversarial testing before and after change",
+                "b": "The workflow is tested against injection scenarios relevant to its inputs before deployment and after material change, with results recorded and findings tracked to closure.",
+                "c": "Adversarial testing is evidenced and findings are tracked."
+        }
+];
+
+      var list = document.getElementById("standardsList");
+      standards.forEach(function (s, i) {
+        var d = document.createElement("div");
+        d.className = "standard";
+        d.setAttribute("data-open", "false");
+        d.innerHTML =
+          '<button class="std-head" aria-expanded="false">' +
+          '<span class="std-num">' + (i + 1) + '</span>' +
+          '<span class="std-title">' + s.t + '</span>' +
+          '<span class="std-caret" aria-hidden="true">\u25BC</span>' +
+          '</button>' +
+          '<div class="std-body">' +
+          '<p>' + s.b + '</p>' +
+          '<label class="std-check"><input type="checkbox" data-std> <span><b>Evidenced in my design:</b> ' + s.c + '</span></label>' +
+          '</div>';
+        list.appendChild(d);
+      });
+
+      list.addEventListener("click", function (e) {
+        var head = e.target.closest(".std-head");
+        if (!head) return;
+        var card = head.parentElement;
+        var open = card.getAttribute("data-open") === "true";
+        card.setAttribute("data-open", String(!open));
+        head.setAttribute("aria-expanded", String(!open));
+      });
+
+      var bar = document.getElementById("stdBar");
+      var count = document.getElementById("stdCount");
+      list.addEventListener("change", function (e) {
+        if (!e.target.matches("[data-std]")) return;
+        e.target.closest(".standard").classList.toggle("met", e.target.checked);
+        var boxes = list.querySelectorAll("[data-std]");
+        var met = list.querySelectorAll("[data-std]:checked").length;
+        bar.style.width = (met / boxes.length * 100) + "%";
+        count.textContent = met + " of " + boxes.length + " standards evidenced";
+        if (met === boxes.length) { count.textContent += " \u2014 ready for submission review"; }
+      });
+
+      /* ---------- Four questions ---------- */
+      var fourq = document.getElementById("fourq");
+      var verdict = document.getElementById("verdict");
+      fourq.addEventListener("change", function (e) {
+        if (e.target.type !== "checkbox") return;
+        e.target.closest(".q").classList.toggle("yes", e.target.checked);
+        var done = fourq.querySelectorAll("input:checked").length;
+        if (done === 4) {
+          verdict.classList.add("ready");
+          verdict.innerHTML = "All four answered &mdash; the containment design is ready for security review.";
+        } else {
+          verdict.classList.remove("ready");
+          verdict.textContent = "Answer all four before submission. If any answer is unclear, the control design is not ready. (" + done + " of 4)";
+        }
+      });
+
+      /* ---------- Scroll-spy ---------- */
+      var links = Array.prototype.slice.call(document.querySelectorAll("nav.sidenav a"));
+      var sections = links.map(function (a) { return document.querySelector(a.getAttribute("href")); });
+      function spy() {
+        var pos = window.scrollY + 120;
+        var active = 0;
+        sections.forEach(function (s, i) { if (s && s.offsetTop <= pos) active = i; });
+        links.forEach(function (a, i) { a.classList.toggle("active", i === active); });
+      }
+      window.addEventListener("scroll", spy, { passive: true });
+      spy();
+    })();
+  </script>
+</body>
+
+</html>
